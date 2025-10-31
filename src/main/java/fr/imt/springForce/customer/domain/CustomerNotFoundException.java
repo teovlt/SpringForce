@@ -4,19 +4,16 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.domain;
+package fr.imt.springForce.customer.domain;
 
-import lombok.Value;
+public class CustomerNotFoundException extends RuntimeException {
 
-import java.util.UUID;
+    public CustomerNotFoundException() {
+        super();
+    }
 
-@Value
-public class CustomerId {
-
-    UUID id;
-
-    public static CustomerId generate() {
-        return new CustomerId(UUID.randomUUID());
+    public CustomerNotFoundException(String message) {
+        super(message);
     }
 
 }

@@ -1,10 +1,10 @@
-package fr.imt.carleasesystem;
+package fr.imt.springForce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CarLeaseSystemApplicationTests {
+class SpringForceApplicationTests {
 
     @Test
     void contextLoads() {

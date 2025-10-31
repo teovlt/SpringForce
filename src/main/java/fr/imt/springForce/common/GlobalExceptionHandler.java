@@ -4,16 +4,11 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.domain;
+package fr.imt.springForce.common;
 
-public class CustomerNotFoundException extends RuntimeException {
+public class GlobalExceptionHandler {
 
-    public CustomerNotFoundException() {
-        super();
+    public void sayHi() {
+        System.out.println("Hi !");
     }
-
-    public CustomerNotFoundException(String message) {
-        super(message);
-    }
-
 }

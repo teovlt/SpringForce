@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.api;
+package fr.imt.springForce.customer.api;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

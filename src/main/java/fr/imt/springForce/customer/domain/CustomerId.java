@@ -4,11 +4,19 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.common;
+package fr.imt.springForce.customer.domain;
 
-public class GlobalExceptionHandler {
+import lombok.Value;
 
-    public void sayHi() {
-        System.out.println("Hi !");
+import java.util.UUID;
+
+@Value
+public class CustomerId {
+
+    UUID id;
+
+    public static CustomerId generate() {
+        return new CustomerId(UUID.randomUUID());
     }
+
 }

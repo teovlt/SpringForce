@@ -4,11 +4,11 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.infrastructure.persistence;
+package fr.imt.springForce.customer.infrastructure.persistence;
 
-import fr.imt.carleasesystem.customer.domain.Customer;
-import fr.imt.carleasesystem.customer.domain.CustomerNotFoundException;
-import fr.imt.carleasesystem.customer.domain.CustomerRepository;
+import fr.imt.springForce.customer.domain.Customer;
+import fr.imt.springForce.customer.domain.CustomerNotFoundException;
+import fr.imt.springForce.customer.domain.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

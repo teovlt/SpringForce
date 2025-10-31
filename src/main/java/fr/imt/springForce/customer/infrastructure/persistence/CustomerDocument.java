@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.infrastructure.persistence;
+package fr.imt.springForce.customer.infrastructure.persistence;
 
 import lombok.Value;
 import org.springframework.data.annotation.Id;

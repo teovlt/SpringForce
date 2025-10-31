@@ -1,4 +1,4 @@
-package fr.imt.carleasesystem.customer.domain;
+package fr.imt.springForce.customer.domain;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
