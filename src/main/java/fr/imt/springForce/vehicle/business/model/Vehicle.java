@@ -1,9 +1,9 @@
-package fr.imt.springForce.vehicle.buisness.model;
+package fr.imt.springForce.vehicle.business.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @Data
@@ -15,6 +15,6 @@ public class Vehicle {
     private String motorization;
     private String color;
     private String matriculation;
-    private Date acquisitionDate;
+    private LocalDate acquisitionDate;
     private VehicleState state;
 }
