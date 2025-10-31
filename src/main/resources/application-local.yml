@@ -3,4 +3,6 @@ spring:
     name: SpringForce
   data:
     mongodb:
-      uuid-representation: standard
+      host: localhost
+      port: 27017
+      database: SpringForce
