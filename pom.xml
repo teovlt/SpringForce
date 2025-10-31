@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fr.imt</groupId>
-    <artifactId>car-lease-system</artifactId>
+    <artifactId>SpringForce</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>car-lease-system</name>
-    <description>car-lease-system</description>
+    <name>SpringForce</name>
+    <description>SpringForce</description>
     <url/>
     <licenses>
         <license/>

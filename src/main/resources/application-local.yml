@@ -1,6 +1,6 @@
 spring:
   application:
-    name: car-lease-system
+    name: SpringForce
   data:
     mongodb:
       uuid-representation: standard
