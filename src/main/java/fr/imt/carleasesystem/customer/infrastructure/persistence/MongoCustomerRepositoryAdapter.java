@@ -49,6 +49,8 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
         CustomerDocument document = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with ID %s not found", id)));
 
+        // TODO
+
         return Optional.empty();
     }
 
@@ -56,4 +58,5 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
     public void delete(UUID id) {
 
     }
+
 }

@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: car-lease-system
-  data:
-    mongodb:
-      uuid-representation: standard
