@@ -1,8 +1,7 @@
-package fr.imt.springForce.customer.domain;
+package fr.imt.springforce.customer.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @AllArgsConstructor

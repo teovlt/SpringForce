@@ -1,12 +1,6 @@
-/*
- * -----------------------------------------------------------------
- *  Ce code source est la propriété de Boulanger S.A. Tous droits réservés, 2025.
- *  (C) Copyright Boulanger S.A., 2025
- * -----------------------------------------------------------------
- */
-package fr.imt.carleasesystem.customer.api;
+package fr.imt.springforce.customer.api;
 
-import fr.imt.carleasesystem.common.ResourceNotFoundException;
+import fr.imt.springforce.common.ResourceNotFoundException;
 
 public class CustomerNotFoundException extends ResourceNotFoundException {
 

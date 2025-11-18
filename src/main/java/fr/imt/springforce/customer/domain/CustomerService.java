@@ -1,22 +1,12 @@
-/*
- * -----------------------------------------------------------------
- *  Ce code source est la propriété de Boulanger S.A. Tous droits réservés, 2025.
- *  (C) Copyright Boulanger S.A., 2025
- * -----------------------------------------------------------------
- */
-package fr.imt.carleasesystem.customer.application;
+package fr.imt.springforce.customer.domain;
 
-import fr.imt.carleasesystem.customer.api.CustomerDetails;
-import fr.imt.carleasesystem.customer.api.CustomerNotFoundException;
-import fr.imt.carleasesystem.customer.domain.Customer;
-import fr.imt.carleasesystem.customer.domain.CustomerMapper;
-import fr.imt.carleasesystem.customer.domain.CustomerRepository;
+import fr.imt.springforce.customer.api.CustomerDetails;
+import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 

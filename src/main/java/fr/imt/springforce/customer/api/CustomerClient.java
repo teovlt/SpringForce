@@ -1,4 +1,4 @@
-package fr.imt.springForce.customer.api;
+package fr.imt.springforce.customer.api;
 
 import java.util.*;
 

@@ -1,12 +1,6 @@
-/*
- * -----------------------------------------------------------------
- *  Ce code source est la propriété de Boulanger S.A. Tous droits réservés, 2025.
- *  (C) Copyright Boulanger S.A., 2025
- * -----------------------------------------------------------------
- */
-package fr.imt.carleasesystem.customer.domain;
+package fr.imt.springforce.customer.domain;
 
-import fr.imt.carleasesystem.customer.api.CustomerDetails;
+import fr.imt.springforce.customer.api.CustomerDetails;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -1,4 +1,4 @@
-package fr.imt.springForce.customer.infrastructure.persistence;
+package fr.imt.springforce.customer.infrastructure.persistence;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

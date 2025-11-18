@@ -1,10 +1,4 @@
-/*
- * -----------------------------------------------------------------
- *  Ce code source est la propriété de Boulanger S.A. Tous droits réservés, 2025.
- *  (C) Copyright Boulanger S.A., 2025
- * -----------------------------------------------------------------
- */
-package fr.imt.carleasesystem.common;
+package fr.imt.springforce.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -25,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * classes.
  */
 @Slf4j
-@RestControllerAdvice(basePackages = "fr.imt.carleasesystem")
+@RestControllerAdvice(basePackages = "fr.imt.springforce")
 public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
 
     /**

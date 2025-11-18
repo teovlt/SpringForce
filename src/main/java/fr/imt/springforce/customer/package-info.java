@@ -1,4 +1,4 @@
 @ApplicationModule(id = "Customer")
-package fr.imt.springForce.customer;
+package fr.imt.springforce.customer;
 
 import org.springframework.modulith.ApplicationModule;

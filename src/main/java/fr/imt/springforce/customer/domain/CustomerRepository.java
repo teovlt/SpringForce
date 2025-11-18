@@ -1,4 +1,4 @@
-package fr.imt.carleasesystem.customer.domain;
+package fr.imt.springforce.customer.domain;
 
 import java.util.Collection;
 import java.util.Optional;

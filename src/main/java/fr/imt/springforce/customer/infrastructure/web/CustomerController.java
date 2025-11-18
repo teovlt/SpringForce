@@ -1,13 +1,7 @@
-/*
- * -----------------------------------------------------------------
- *  Ce code source est la propriété de Boulanger S.A. Tous droits réservés, 2025.
- *  (C) Copyright Boulanger S.A., 2025
- * -----------------------------------------------------------------
- */
-package fr.imt.springForce.customer.infrastructure.web;
+package fr.imt.springforce.customer.infrastructure.web;
 
-import fr.imt.carleasesystem.customer.api.CustomerDetails;
-import fr.imt.carleasesystem.customer.application.CustomerService;
+import fr.imt.springforce.customer.api.CustomerDetails;
+import fr.imt.springforce.customer.domain.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,4 +20,5 @@ public class CustomerController {
     public ResponseEntity<CustomerDetails> save(@Valid @RequestBody CustomerDetails request) {
         return new ResponseEntity<>(customerService.save(request), HttpStatus.CREATED);
     }
+
 }
