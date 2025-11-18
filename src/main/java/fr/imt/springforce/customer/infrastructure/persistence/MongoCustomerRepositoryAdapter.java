@@ -54,14 +54,6 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
     }
 
     @Override
-    public void delete(UUID id) {
-        if (!customerRepository.existsById(id)) {
-            throw new CustomerNotFoundException(String.format("Customer with ID %s not found", id));
-        }
-        customerRepository.deleteById(id);
-    }
-
-    @Override
     public boolean existsById(UUID id) {
         return customerRepository.existsById(id);
     }

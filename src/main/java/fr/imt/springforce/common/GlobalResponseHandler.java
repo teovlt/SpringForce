@@ -12,14 +12,16 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * This @RestControllerAdvice intercepts all responses from @RestController
  * classes.
  */
 @Slf4j
-@RestControllerAdvice(basePackages = "fr.imt.springforce")
+@RestControllerAdvice
 public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
 
     /**
@@ -66,6 +68,12 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
                 ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<HttpResponse<Void>> handleNoResourceFoundException(NoResourceFoundException ex) {
+        HttpResponse<Void> errorResponse = HttpResponse.error("Resource Not Found");
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     /**

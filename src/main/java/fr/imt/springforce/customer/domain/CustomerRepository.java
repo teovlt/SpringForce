@@ -13,9 +13,7 @@ public interface CustomerRepository {
     Customer save(Customer customer);
 
     Optional<Customer> update(Customer customer, UUID id);
-
-    void delete(UUID id);
-
+    
     boolean existsById(UUID id);
 
     void deleteById(UUID id);

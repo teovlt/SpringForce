@@ -16,11 +16,11 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public CustomerDetails save(@Valid CustomerDetails customer) {
-        customerRepository.save(Customer.generate(
-                customer.getFirstName(), customer.getFamilyName(), customer.getEmail(), customer.getPhoneNumber()
+    public CustomerDetails save(@Valid CustomerDetails customerDetails) {
+        Customer customer = customerRepository.save(Customer.generate(
+                customerDetails.getFirstName(), customerDetails.getFamilyName(), customerDetails.getEmail(), customerDetails.getPhoneNumber()
         ));
-        return customer;
+        return customerMapper.toCustomerDetails(customer);
     }
 
     public CustomerDetails findById(UUID id) {
