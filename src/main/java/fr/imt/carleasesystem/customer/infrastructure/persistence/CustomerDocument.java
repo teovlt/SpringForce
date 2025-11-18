@@ -6,6 +6,7 @@
  */
 package fr.imt.carleasesystem.customer.infrastructure.persistence;
 
+import lombok.Setter;
 import lombok.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @Value
 @Document(collection = "customers")
+@Setter
 public class CustomerDocument {
 
     @Id

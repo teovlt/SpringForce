@@ -6,9 +6,10 @@
  */
 package fr.imt.carleasesystem.common;
 
-public class GlobalExceptionHandler {
+public abstract class ResourceNotFoundException extends RuntimeException {
 
-    public void sayHi() {
-        System.out.println("Hi !");
+    protected ResourceNotFoundException(String message) {
+        super(message);
     }
+
 }

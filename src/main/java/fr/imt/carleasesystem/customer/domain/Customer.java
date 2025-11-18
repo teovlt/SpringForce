@@ -1,11 +1,28 @@
 package fr.imt.carleasesystem.customer.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Value
+@Builder
 public class Customer {
+
+    public static Customer generate(
+            String firstName,
+            String familyName,
+            String email,
+            String phoneNumber) {
+        return Customer.builder()
+                .customerId(CustomerId.generate())
+                .firstName(firstName)
+                .familyName(familyName)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .build();
+    }
 
     CustomerId customerId;
 
@@ -16,5 +33,6 @@ public class Customer {
     String email;
 
     String phoneNumber;
+
 
 }

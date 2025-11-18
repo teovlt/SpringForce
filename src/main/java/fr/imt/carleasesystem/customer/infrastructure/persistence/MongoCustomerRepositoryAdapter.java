@@ -6,8 +6,8 @@
  */
 package fr.imt.carleasesystem.customer.infrastructure.persistence;
 
+import fr.imt.carleasesystem.customer.api.CustomerNotFoundException;
 import fr.imt.carleasesystem.customer.domain.Customer;
-import fr.imt.carleasesystem.customer.domain.CustomerNotFoundException;
 import fr.imt.carleasesystem.customer.domain.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -38,16 +38,17 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
                 .toList();
     }
 
-    @Override
-    public Optional<Customer> save(Customer customer) {
+   @Override
+    public Customer save(Customer customer) {
         CustomerDocument document = customerRepository.save(mapper.toDocument(customer));
-        return Optional.of(mapper.toDomain(document));
+        return mapper.toDomain(document);
     }
 
     @Override
     public Optional<Customer> update(Customer customer, UUID id) {
         CustomerDocument document = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with ID %s not found", id)));
+        
 
         // TODO
 

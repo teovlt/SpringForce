@@ -12,4 +12,5 @@ class ModuleIntegrationTest {
         // It will PASS if 'ordering' only imports 'customer.api.CustomerDetails'.
         ApplicationModules.of(CarLeaseSystemApplication.class).verify();
     }
+
 }

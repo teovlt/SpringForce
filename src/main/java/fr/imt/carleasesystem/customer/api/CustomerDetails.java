@@ -8,10 +8,16 @@ package fr.imt.carleasesystem.customer.api;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Value;
 
+import java.util.UUID;
+
 @Value
+@Builder
 public class CustomerDetails {
+
+    UUID id;
 
     @NotBlank
     String firstName;
