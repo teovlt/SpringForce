@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.domain;
+package fr.imt.springForce.customer.domain;
 
 import lombok.Value;
 

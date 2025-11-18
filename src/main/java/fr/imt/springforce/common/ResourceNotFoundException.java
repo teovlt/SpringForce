@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.common;
+package fr.imt.springForce.common;
 
 public abstract class ResourceNotFoundException extends RuntimeException {
 

@@ -4,32 +4,33 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.api;
+package fr.imt.springForce.customer.infrastructure.persistence;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
+import lombok.Setter;
 import lombok.Value;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
 
 @Value
-@Builder
-public class CustomerDetails {
+@Document(collection = "customers")
+@Setter
+public class CustomerDocument {
 
-    UUID id;
+    @Id
+    String id;
 
-    @NotBlank
+    UUID publicId;
+
     String firstName;
 
-    @NotBlank
     String familyName;
 
-    @Email
-    @NotBlank
+    @Indexed(unique = true)
     String email;
 
-    @NotBlank
     String phoneNumber;
 
 }

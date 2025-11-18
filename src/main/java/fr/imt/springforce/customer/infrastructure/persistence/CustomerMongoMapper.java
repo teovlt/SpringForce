@@ -4,9 +4,9 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.infrastructure.persistence;
+package fr.imt.springForce.customer.infrastructure.persistence;
 
-import fr.imt.carleasesystem.customer.domain.Customer;
+import fr.imt.springForce.customer.domain.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

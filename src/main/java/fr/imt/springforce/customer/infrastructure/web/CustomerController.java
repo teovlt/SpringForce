@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.carleasesystem.customer.infrastructure.web;
+package fr.imt.springForce.customer.infrastructure.web;
 
 import fr.imt.carleasesystem.customer.api.CustomerDetails;
 import fr.imt.carleasesystem.customer.application.CustomerService;

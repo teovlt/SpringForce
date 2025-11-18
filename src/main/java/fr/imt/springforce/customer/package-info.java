@@ -1,4 +1,4 @@
 @ApplicationModule(id = "Customer")
-package fr.imt.carleasesystem.customer;
+package fr.imt.springForce.customer;
 
 import org.springframework.modulith.ApplicationModule;

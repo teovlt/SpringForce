@@ -48,7 +48,7 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
     public Optional<Customer> update(Customer customer, UUID id) {
         CustomerDocument document = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with ID %s not found", id)));
-        
+
 
         // TODO
 

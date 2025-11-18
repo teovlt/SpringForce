@@ -1,13 +1,13 @@
-package fr.imt.carleasesystem;
+package fr.imt.springForce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CarLeaseSystemApplication {
+public class SpringForceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CarLeaseSystemApplication.class, args);
+        SpringApplication.run(SpringForceApplication.class, args);
     }
 
 }
