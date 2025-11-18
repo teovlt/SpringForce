@@ -14,7 +14,7 @@ public class VehicleController {
 
     private final VehicleService vehicleService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<Vehicle> findAllVehicles() {
         return vehicleService.findAll();
     }
@@ -24,7 +24,7 @@ public class VehicleController {
         return vehicleService.findById(vehicleId);
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public Vehicle createVehicle(@RequestBody Vehicle vehicle) {
         return vehicleService.create(vehicle);
     }
