@@ -1,6 +1,8 @@
 package fr.imt.springForce.vehicle.business.service;
 
 import fr.imt.springForce.vehicle.business.model.Vehicle;
+import fr.imt.springForce.vehicle.business.validators.VehicleValidator;
+import fr.imt.springForce.vehicle.infrastructure.exceptions.VehicleAlreadyExistsException;
 import fr.imt.springForce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import java.util.List;
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final VehicleValidator vehicleValidator;
 
     public List<Vehicle> findAll() {
         return vehicleRepository.findAll();
@@ -21,6 +24,7 @@ public class VehicleService {
     }
 
     public Vehicle create(Vehicle vehicle) {
+        vehicleValidator.verifyMatriculationUnicity(vehicle.getMatriculation());
         return vehicleRepository.save(vehicle);
     }
 
@@ -28,6 +32,7 @@ public class VehicleService {
         Vehicle updatedVehicle = vehicleRepository.findById(vehicleId).orElse(null);
 
         if (updatedVehicle != null) {
+            vehicleValidator.verifyMatriculationUnicity(vehicle.getMatriculation());
             return vehicleRepository.save(updatedVehicle);
         }else{
             return null;
