@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +33,27 @@ public class CustomerService {
         Collection<Customer> customers = customerRepository.findAll();
         return customers.stream()
                 .map(customerMapper::toCustomerDetails)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    public CustomerDetails update(UUID id, @Valid CustomerDetails customerDetails) {
+        Customer existingCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
+
+        existingCustomer.setFirstName(customerDetails.getFirstName());
+        existingCustomer.setFamilyName(customerDetails.getFamilyName());
+        existingCustomer.setEmail(customerDetails.getEmail());
+        existingCustomer.setPhoneNumber(customerDetails.getPhoneNumber());
+
+        customerRepository.save(existingCustomer);
+        return customerMapper.toCustomerDetails(existingCustomer);
+    }
+
+    public void delete(UUID id) {
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException(id.toString());
+        }
+        customerRepository.deleteById(id);
     }
 
 }

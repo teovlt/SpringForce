@@ -20,7 +20,7 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
     @Override
     public Optional<Customer> findById(UUID id) {
         CustomerDocument document = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with ID %s not found", id)));
+                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
         return Optional.of(mapper.toDomain(document));
     }
 
@@ -40,18 +40,38 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
 
     @Override
     public Optional<Customer> update(Customer customer, UUID id) {
-        CustomerDocument document = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with ID %s not found", id)));
+        CustomerDocument existingDocument = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
 
+        existingDocument.setFirstName(customer.getFirstName());
+        existingDocument.setFamilyName(customer.getFamilyName());
+        existingDocument.setEmail(customer.getEmail());
+        existingDocument.setPhoneNumber(customer.getPhoneNumber());
 
-        // TODO
-
-        return Optional.empty();
+        // Save the updated document
+        CustomerDocument updatedDocument = customerRepository.save(existingDocument);
+        return Optional.of(mapper.toDomain(updatedDocument));
     }
 
     @Override
     public void delete(UUID id) {
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException(String.format("Customer with ID %s not found", id));
+        }
+        customerRepository.deleteById(id);
+    }
 
+    @Override
+    public boolean existsById(UUID id) {
+        return customerRepository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException(String.format("Customer with ID %s not found", id));
+        }
+        customerRepository.deleteById(id);
     }
 
 }
