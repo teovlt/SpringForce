@@ -3,6 +3,8 @@ package fr.imt.springforce.common;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,6 +60,35 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    /**
+     * Handles:
+     * 1. Missing Request Body (Body is null/empty)
+     * 2. Malformed JSON (Syntax errors, missing brackets, etc.)
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<HttpResponse<Void>> handleMalformedRequest(HttpMessageNotReadableException ex) {
+        log.error("Malformed request: ", ex);
+
+        HttpResponse<Void> errorResponse = HttpResponse.error("Bad Request");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles:
+     * User sends "Content-Type: text/plain" or "application/xml"
+     * but your API expects "application/json".
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<HttpResponse<Void>> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        log.warn("Unsupported Media Type: {}", ex.getContentType());
+
+        HttpResponse<Void> errorResponse = HttpResponse.error(
+                "Unsupported Media Type",
+                "API only accepts JSON. Please set 'Content-Type: application/json'"
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HttpResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         log.error("Illegal argument exception: ", ex);
@@ -68,6 +99,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HttpResponse<Void>> handleGenericException(Exception ex) {
         log.error("Unhandled exception: ", ex);
@@ -77,4 +109,5 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }
