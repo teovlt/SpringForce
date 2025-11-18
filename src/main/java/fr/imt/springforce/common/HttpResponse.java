@@ -37,7 +37,7 @@ public class HttpResponse<T> {
     }
 
     public static HttpResponse<Void> error(String message) {
-        return new HttpResponse<>(message, null, Collections.emptyList());
+        return new HttpResponse<>(message, null, null);
     }
 
 }
