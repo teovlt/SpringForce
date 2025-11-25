@@ -1,6 +1,5 @@
-package fr.imt.springForce.vehicle.buisness;
+package fr.imt.springForce.vehicle.buisness.model;
 
-import fr.imt.springForce.vehicle.utils.VehicleState;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 
