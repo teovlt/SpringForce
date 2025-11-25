@@ -1,7 +1,7 @@
-package fr.imt.springForce.vehicle.business.validators;
+package fr.imt.springforce.vehicle.business.validators;
 
-import fr.imt.springForce.vehicle.infrastructure.exceptions.VehicleAlreadyExistsException;
-import fr.imt.springForce.vehicle.infrastructure.repository.VehicleRepository;
+import fr.imt.springforce.vehicle.infrastructure.exceptions.VehicleAlreadyExistsException;
+import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

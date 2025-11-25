@@ -1,4 +1,4 @@
-package fr.imt.springForce;
+package fr.imt.springforce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

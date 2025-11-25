@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.springForce.common;
+package fr.imt.springforce.common;
 
 public class GlobalExceptionHandler {
 

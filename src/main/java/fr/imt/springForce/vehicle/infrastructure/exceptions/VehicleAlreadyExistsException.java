@@ -1,4 +1,4 @@
-package fr.imt.springForce.vehicle.infrastructure.exceptions;
+package fr.imt.springforce.vehicle.infrastructure.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
