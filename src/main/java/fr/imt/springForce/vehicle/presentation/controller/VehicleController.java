@@ -1,10 +1,9 @@
 package fr.imt.springForce.vehicle.presentation.controller;
 
-import fr.imt.springForce.vehicle.buisness.model.Vehicle;
+import fr.imt.springForce.vehicle.business.model.Vehicle;
+import fr.imt.springForce.vehicle.business.service.VehicleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -13,6 +12,16 @@ import java.util.List;
 @RequestMapping("api/vehicles")
 public class VehicleController {
 
+    private final VehicleService vehicleService;
 
+    @GetMapping("/")
+    public List<Vehicle> findAll() {
+        return vehicleService.findAll();
+    }
+
+    @PostMapping("/")
+    public Vehicle createVehicle(@RequestBody Vehicle vehicle) {
+        return vehicleService.create(vehicle);
+    }
 
 }
