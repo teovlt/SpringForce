@@ -1,4 +1,4 @@
-package fr.imt.springForce.vehicle.business.model;
+package fr.imt.springforce.vehicle.business.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

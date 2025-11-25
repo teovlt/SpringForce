@@ -1,7 +1,7 @@
-package fr.imt.springForce.vehicle.presentation.controller;
+package fr.imt.springforce.vehicle.presentation.controller;
 
-import fr.imt.springForce.vehicle.business.model.Vehicle;
-import fr.imt.springForce.vehicle.business.service.VehicleService;
+import fr.imt.springforce.vehicle.business.model.Vehicle;
+import fr.imt.springforce.vehicle.business.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

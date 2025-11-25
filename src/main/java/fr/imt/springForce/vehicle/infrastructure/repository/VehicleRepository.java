@@ -1,6 +1,6 @@
-package fr.imt.springForce.vehicle.infrastructure.repository;
+package fr.imt.springforce.vehicle.infrastructure.repository;
 
-import fr.imt.springForce.vehicle.business.model.Vehicle;
+import fr.imt.springforce.vehicle.business.model.Vehicle;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface VehicleRepository extends MongoRepository<Vehicle, String> {
