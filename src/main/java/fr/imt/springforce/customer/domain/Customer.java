@@ -2,10 +2,10 @@ package fr.imt.springforce.customer.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 @AllArgsConstructor
-@Value
+@Data
 @Builder
 public class Customer {
 
@@ -23,15 +23,15 @@ public class Customer {
                 .build();
     }
 
-    CustomerId customerId;
+    private CustomerId customerId;
 
-    String firstName;
+    private String firstName;
 
-    String familyName;
+    private String familyName;
 
-    String email;
+    private String email;
 
-    String phoneNumber;
+    private String phoneNumber;
 
 
 }

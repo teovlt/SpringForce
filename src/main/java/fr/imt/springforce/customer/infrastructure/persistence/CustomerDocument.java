@@ -1,30 +1,30 @@
 package fr.imt.springforce.customer.infrastructure.persistence;
 
+import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
 
-@Value
 @Document(collection = "customers")
+@Getter
 @Setter
 public class CustomerDocument {
 
     @Id
-    String id;
+    private String id;
 
-    UUID publicId;
+    private UUID publicId;
 
-    String firstName;
+    private String firstName;
 
-    String familyName;
+    private String familyName;
 
     @Indexed(unique = true)
-    String email;
+    private String email;
 
-    String phoneNumber;
+    private String phoneNumber;
 
 }

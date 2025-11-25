@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -17,11 +16,11 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public CustomerDetails save(@Valid CustomerDetails customer) {
-        customerRepository.save(Customer.generate(
-                customer.getFirstName(), customer.getFamilyName(), customer.getEmail(), customer.getPhoneNumber()
+    public CustomerDetails save(@Valid CustomerDetails customerDetails) {
+        Customer customer = customerRepository.save(Customer.generate(
+                customerDetails.getFirstName(), customerDetails.getFamilyName(), customerDetails.getEmail(), customerDetails.getPhoneNumber()
         ));
-        return customer;
+        return customerMapper.toCustomerDetails(customer);
     }
 
     public CustomerDetails findById(UUID id) {
@@ -34,8 +33,27 @@ public class CustomerService {
         Collection<Customer> customers = customerRepository.findAll();
         return customers.stream()
                 .map(customerMapper::toCustomerDetails)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    public CustomerDetails update(UUID id, @Valid CustomerDetails customerDetails) {
+        Customer existingCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
+
+        existingCustomer.setFirstName(customerDetails.getFirstName());
+        existingCustomer.setFamilyName(customerDetails.getFamilyName());
+        existingCustomer.setEmail(customerDetails.getEmail());
+        existingCustomer.setPhoneNumber(customerDetails.getPhoneNumber());
+
+        customerRepository.save(existingCustomer);
+        return customerMapper.toCustomerDetails(existingCustomer);
+    }
+
+    public void delete(UUID id) {
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException(id.toString());
+        }
+        customerRepository.deleteById(id);
     }
 
 }
-
