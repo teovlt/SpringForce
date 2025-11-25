@@ -25,6 +25,12 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepository {
     }
 
     @Override
+    public Optional<Customer> findByEmail(String email) {
+        CustomerDocument document = customerRepository.findByEmail(email);
+        return Optional.of(mapper.toDomain(document));
+    }
+
+    @Override
     public Collection<Customer> findAll() {
         return customerRepository.findAll()
                 .stream()

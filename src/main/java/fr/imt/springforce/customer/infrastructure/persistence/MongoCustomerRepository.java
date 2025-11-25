@@ -10,4 +10,5 @@ public interface MongoCustomerRepository extends MongoRepository<CustomerDocumen
 
     void deleteById(UUID id);
 
+    CustomerDocument findByEmail(String email);
 }
