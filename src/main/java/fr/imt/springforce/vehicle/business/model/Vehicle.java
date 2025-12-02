@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 @Data
+@Builder
 public class Vehicle {
     @Id
     private String id;

@@ -1,8 +1,11 @@
-package fr.imt.springforce.customer.infrastructure.persistence;
+package fr.imt.springforce.customer.infrastructure.persistence.adapter;
 
 import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import fr.imt.springforce.customer.domain.Customer;
-import fr.imt.springforce.customer.domain.CustomerRepository;
+import fr.imt.springforce.customer.domain.port.out.CustomerRepositoryPort;
+import fr.imt.springforce.customer.infrastructure.persistence.CustomerDocument;
+import fr.imt.springforce.customer.infrastructure.persistence.CustomerMongoMapper;
+import fr.imt.springforce.customer.infrastructure.persistence.MongoCustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +15,7 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class MongoCustomerRepositoryAdapter implements CustomerRepository {
+public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
 
     private final CustomerMongoMapper mapper;
     private final MongoCustomerRepository customerRepository;

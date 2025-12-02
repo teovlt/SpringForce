@@ -1,6 +1,7 @@
-package fr.imt.springforce.customer.domain;
+package fr.imt.springforce.customer.application.mapper;
 
 import fr.imt.springforce.customer.api.CustomerDetails;
+import fr.imt.springforce.customer.domain.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

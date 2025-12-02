@@ -1,6 +1,6 @@
 package fr.imt.springforce.customer.api;
 
-import fr.imt.springforce.common.ResourceNotFoundException;
+import fr.imt.springforce.common.exception.ResourceNotFoundException;
 
 public class CustomerNotFoundException extends ResourceNotFoundException {
 
