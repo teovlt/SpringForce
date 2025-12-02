@@ -28,6 +28,8 @@ public class CustomerDocument {
 
     private String phoneNumber;
 
+    private String licenceNumber;
+
     private Address address;
 
 }

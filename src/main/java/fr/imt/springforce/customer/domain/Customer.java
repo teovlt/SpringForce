@@ -15,13 +15,17 @@ public class Customer {
             String firstName,
             String familyName,
             String email,
-            String phoneNumber) {
+            String phoneNumber,
+            Address address,
+            String licenceNumber) {
         return Customer.builder()
                 .customerId(CustomerId.generate())
                 .firstName(firstName)
                 .familyName(familyName)
                 .email(email)
                 .phoneNumber(phoneNumber)
+                .address(address)
+                .licenceNumber(licenceNumber)
                 .build();
     }
 
