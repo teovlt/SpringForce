@@ -38,6 +38,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<HttpResponse<Void>> handleValidationException(ValidationException ex) {
+        log.error("Validation error: {}", ex.getMessage());
+        HttpResponse<Void> errorResponse = HttpResponse.error(
+                "Validation Failed",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<HttpResponse<Void>> handleValidationErrors(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
@@ -99,7 +109,6 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HttpResponse<Void>> handleGenericException(Exception ex) {

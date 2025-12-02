@@ -3,6 +3,7 @@ package fr.imt.springforce.customer.application;
 import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import fr.imt.springforce.customer.application.mapper.CustomerMapper;
+import fr.imt.springforce.customer.domain.Address;
 import fr.imt.springforce.customer.domain.Customer;
 import fr.imt.springforce.customer.domain.port.out.CustomerRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,21 +37,35 @@ class CustomerServiceTest {
 
     private CustomerDetails defaultCustomerDetails;
     private Customer defaultCustomer;
+    private Address defaultAddress;
 
     @BeforeEach
     void setUp() {
+        defaultAddress = Address.builder()
+                .streetNumber("123")
+                .streetName("Main Street")
+                .postalCode("75000")
+                .city("Paris")
+                .countryCode("FR")
+                .build();
+
         defaultCustomerDetails = CustomerDetails.builder()
                 .firstName("John")
                 .familyName("Doe")
                 .email("john.doe@example.com")
                 .phoneNumber("1234567890")
+                .address(defaultAddress)
+                .licenceNumber("12012A123456")
                 .build();
+
 
         defaultCustomer = Customer.generate(
                 defaultCustomerDetails.getFirstName(),
                 defaultCustomerDetails.getFamilyName(),
                 defaultCustomerDetails.getEmail(),
-                defaultCustomerDetails.getPhoneNumber()
+                defaultCustomerDetails.getPhoneNumber(),
+                defaultCustomerDetails.getAddress(),
+                defaultCustomerDetails.getLicenceNumber()
         );
     }
 
@@ -68,7 +83,7 @@ class CustomerServiceTest {
     @Test
     void whenFindById_withExistingId_shouldReturnCustomerDetails() {
         UUID customerId = UUID.randomUUID();
-        Customer customer = Customer.generate("Jane", "Doe", "jane.doe@example.com", "0987654321");
+        Customer customer = Customer.generate("Jane", "Doe", "jane.doe@example.com", "0987654321", defaultAddress, "12012A123456");
         CustomerDetails expectedDetails = CustomerDetails.builder()
                 .firstName("Jane")
                 .familyName("Doe")
@@ -97,7 +112,7 @@ class CustomerServiceTest {
     @Test
     void whenFindAll_shouldReturnAllCustomerDetails() {
         Customer customer1 = defaultCustomer;
-        Customer customer2 = Customer.generate("Jane", "Smith", "jane.smith@example.com", "0987654321");
+        Customer customer2 = Customer.generate("Jane", "Smith", "jane.smith@example.com", "0987654321", defaultAddress, "12012A123456");
         List<Customer> customers = List.of(customer1, customer2);
 
         CustomerDetails details1 = defaultCustomerDetails;
@@ -125,8 +140,9 @@ class CustomerServiceTest {
                 .familyName("DoeUpdated")
                 .email("john.doe.updated@example.com")
                 .phoneNumber("1122334455")
+                .licenceNumber("12012A123456")
                 .build();
-        Customer existingCustomer = Customer.generate("John", "Doe", "john.doe@example.com", "1234567890");
+        Customer existingCustomer = Customer.generate("John", "Doe", "john.doe@example.com", "1234567890", defaultAddress, "12012A123456");
 
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.of(existingCustomer));
         when(customerRepositoryPort.save(any(Customer.class))).thenReturn(existingCustomer);
@@ -147,6 +163,7 @@ class CustomerServiceTest {
                 .familyName("Doe")
                 .email("john.doe@example.com")
                 .phoneNumber("1234567890")
+                .licenceNumber("12012A123456")
                 .build();
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.empty());
 
