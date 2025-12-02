@@ -8,9 +8,11 @@ import org.mapstruct.Mapping;
 public interface CustomerMongoMapper {
 
     @Mapping(source = "publicId", target = "customerId.id")
+    @Mapping(source = "licenceNumber", target = "licenceNumber")
     Customer toDomain(CustomerDocument document);
 
     @Mapping(source = "customerId.id", target = "publicId")
+    @Mapping(source = "licenceNumber", target = "licenceNumber")
     CustomerDocument toDocument(Customer customer);
 
 }
