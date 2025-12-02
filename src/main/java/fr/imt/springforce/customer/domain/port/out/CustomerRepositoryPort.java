@@ -1,10 +1,12 @@
-package fr.imt.springforce.customer.domain;
+package fr.imt.springforce.customer.domain.port.out;
+
+import fr.imt.springforce.customer.domain.Customer;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CustomerRepository {
+public interface CustomerRepositoryPort {
 
     Optional<Customer> findById(UUID id);
 
