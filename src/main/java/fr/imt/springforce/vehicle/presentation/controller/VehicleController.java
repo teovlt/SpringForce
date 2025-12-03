@@ -1,42 +1,49 @@
 package fr.imt.springforce.vehicle.presentation.controller;
 
-import fr.imt.springforce.vehicle.business.model.Vehicle;
-import fr.imt.springforce.vehicle.business.service.VehicleService;
+import fr.imt.springforce.vehicle.api.VehicleClient;
+import fr.imt.springforce.vehicle.api.VehicleDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/vehicles")
+@RequestMapping("api/v1/vehicles")
 public class VehicleController {
 
-    private final VehicleService vehicleService;
+    private final VehicleClient vehicleClient;
 
     @GetMapping("")
-    public List<Vehicle> findAllVehicles() {
-        return vehicleService.findAll();
+    public List<VehicleDetails> findAllVehicles() {
+        return vehicleClient.findAll();
     }
 
-    @GetMapping("/:id")
-    public Vehicle findVehicleById(@PathVariable String vehicleId) {
-        return vehicleService.findById(vehicleId);
+    @GetMapping("/{id}")
+    public VehicleDetails findVehicleById(@PathVariable String id) {
+        return vehicleClient.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found"));
     }
 
-    @PostMapping("")
-    public Vehicle createVehicle(@RequestBody Vehicle vehicle) {
-        return vehicleService.create(vehicle);
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public VehicleDetails createVehicle(@RequestBody VehicleDetails vehicle) {
+        return vehicleClient.create(vehicle)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Vehicle creation failed"));
     }
 
-    @PutMapping("/:id")
-    public Vehicle updateVehicle(@RequestBody Vehicle vehicle, @PathVariable String vehicleId) {
-        return vehicleService.update(vehicle, vehicleId);
+    @PutMapping("/{id}")
+    public VehicleDetails updateVehicle(@RequestBody VehicleDetails vehicle, @PathVariable String id) {
+        return vehicleClient.update(vehicle, id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found"));
     }
 
-    @DeleteMapping("/:id")
-    public void deleteVehicle(@PathVariable String vehicleId) {
-         vehicleService.delete(vehicleId);
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteVehicle(@PathVariable String id) {
+        vehicleClient.delete(id);
     }
 
 }

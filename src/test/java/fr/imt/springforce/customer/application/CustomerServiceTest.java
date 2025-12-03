@@ -70,13 +70,14 @@ class CustomerServiceTest {
     }
 
     @Test
-    void whenSavingNewCustomer_shouldReturnSavedCustomerDetails() {
+    void whenCreatingNewCustomer_shouldReturnSavedCustomerDetails() {
         when(customerRepositoryPort.save(any(Customer.class))).thenReturn(defaultCustomer);
         when(customerMapper.toCustomerDetails(defaultCustomer)).thenReturn(defaultCustomerDetails);
 
-        CustomerDetails result = customerService.save(defaultCustomerDetails);
+        Optional<CustomerDetails> result = customerService.save(defaultCustomerDetails);
 
-        assertThat(result).isEqualTo(defaultCustomerDetails);
+        assertThat(result).isPresent();
+        assertThat(result).contains(defaultCustomerDetails);
         verify(customerRepositoryPort).save(any(Customer.class));
     }
 
@@ -94,19 +95,20 @@ class CustomerServiceTest {
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.of(customer));
         when(customerMapper.toCustomerDetails(customer)).thenReturn(expectedDetails);
 
-        CustomerDetails result = customerService.findById(customerId);
+        Optional<CustomerDetails> result = customerService.findById(customerId);
 
-        assertThat(result).isEqualTo(expectedDetails);
+        assertThat(result).isPresent();
+        assertThat(result).contains(expectedDetails);
     }
 
     @Test
-    void whenFindById_withNonExistingId_shouldThrowException() {
+    void whenFindById_withNonExistingId_shouldReturnEmptyOptional() {
         UUID customerId = UUID.randomUUID();
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> customerService.findById(customerId))
-                .isInstanceOf(CustomerNotFoundException.class)
-                .hasMessage("Customer not found with ID: " + customerId);
+        Optional<CustomerDetails> result = customerService.findById(customerId);
+
+        assertThat(result).isNotPresent();
     }
 
     @Test
@@ -146,13 +148,14 @@ class CustomerServiceTest {
 
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.of(existingCustomer));
         when(customerRepositoryPort.save(any(Customer.class))).thenReturn(existingCustomer);
-        when(customerMapper.toCustomerDetails(existingCustomer)).thenReturn(customerDetailsToUpdate); // Mock the mapper for the return value
+        when(customerMapper.toCustomerDetails(existingCustomer)).thenReturn(customerDetailsToUpdate);
 
-        CustomerDetails result = customerService.update(customerId, customerDetailsToUpdate);
+        Optional<CustomerDetails> result = customerService.update(customerDetailsToUpdate, customerId);
 
         verify(customerRepositoryPort).save(existingCustomer);
         assertThat(existingCustomer.getFamilyName()).isEqualTo("DoeUpdated");
-        assertThat(result).isEqualTo(customerDetailsToUpdate);
+        assertThat(result).isPresent();
+        assertThat(result).contains(customerDetailsToUpdate);
     }
 
     @Test
@@ -167,7 +170,7 @@ class CustomerServiceTest {
                 .build();
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> customerService.update(customerId, customerDetailsToUpdate))
+        assertThatThrownBy(() -> customerService.update(customerDetailsToUpdate, customerId))
                 .isInstanceOf(CustomerNotFoundException.class);
     }
 
@@ -190,4 +193,3 @@ class CustomerServiceTest {
                 .isInstanceOf(CustomerNotFoundException.class);
     }
 }
-
