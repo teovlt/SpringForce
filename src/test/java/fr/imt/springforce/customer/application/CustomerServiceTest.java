@@ -1,12 +1,10 @@
 package fr.imt.springforce.customer.application;
 
-import fr.imt.springforce.common.exception.ValidationException;
 import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import fr.imt.springforce.customer.application.mapper.CustomerMapper;
 import fr.imt.springforce.customer.domain.Address;
 import fr.imt.springforce.customer.domain.Customer;
-import fr.imt.springforce.customer.domain.CustomerId;
 import fr.imt.springforce.customer.domain.port.out.CustomerRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +38,6 @@ class CustomerServiceTest {
     private CustomerDetails defaultCustomerDetails;
     private Customer defaultCustomer;
     private Address defaultAddress;
-    private Instant defaultBirthDate;
 
     @BeforeEach
     void setUp() {
@@ -53,8 +49,6 @@ class CustomerServiceTest {
                 .countryCode("FR")
                 .build();
 
-        defaultBirthDate = Instant.parse("1990-01-15T10:00:00Z");
-
         defaultCustomerDetails = CustomerDetails.builder()
                 .firstName("John")
                 .familyName("Doe")
@@ -62,66 +56,40 @@ class CustomerServiceTest {
                 .phoneNumber("1234567890")
                 .address(defaultAddress)
                 .licenceNumber("12012A123456")
-                .birthDate(defaultBirthDate)
                 .build();
 
-        defaultCustomer = Customer.builder()
-                .customerId(CustomerId.generate())
-                .firstName(defaultCustomerDetails.getFirstName())
-                .familyName(defaultCustomerDetails.getFamilyName())
-                .email(defaultCustomerDetails.getEmail())
-                .phoneNumber(defaultCustomerDetails.getPhoneNumber())
-                .address(defaultCustomerDetails.getAddress())
-                .licenceNumber(defaultCustomerDetails.getLicenceNumber())
-                .birthDate(defaultCustomerDetails.getBirthDate())
-                .build();
+
+        defaultCustomer = Customer.generate(
+                defaultCustomerDetails.getFirstName(),
+                defaultCustomerDetails.getFamilyName(),
+                defaultCustomerDetails.getEmail(),
+                defaultCustomerDetails.getPhoneNumber(),
+                defaultCustomerDetails.getAddress(),
+                defaultCustomerDetails.getLicenceNumber()
+        );
     }
 
     @Test
-    void whenSaveNewCustomer_shouldReturnSavedCustomerDetails() {
+    void whenCreatingNewCustomer_shouldReturnSavedCustomerDetails() {
         when(customerRepositoryPort.save(any(Customer.class))).thenReturn(defaultCustomer);
         when(customerMapper.toCustomerDetails(defaultCustomer)).thenReturn(defaultCustomerDetails);
 
         Optional<CustomerDetails> result = customerService.save(defaultCustomerDetails);
 
-        assertThat(result).isPresent().contains(defaultCustomerDetails);
+        assertThat(result).isPresent();
+        assertThat(result).contains(defaultCustomerDetails);
         verify(customerRepositoryPort).save(any(Customer.class));
-    }
-
-    @Test
-    void whenCreate_withDuplicateNameAndBirthDate_shouldThrowValidationException() {
-        when(customerRepositoryPort.existsByFirstNameAndFamilyNameAndBirthDate(
-                defaultCustomerDetails.getFirstName(),
-                defaultCustomerDetails.getFamilyName(),
-                defaultCustomerDetails.getBirthDate()
-        )).thenReturn(true);
-
-        assertThatThrownBy(() -> customerService.save(defaultCustomerDetails))
-                .isInstanceOf(ValidationException.class)
-                .hasMessageContaining("A user with the same first name, last name, and birth date already exists.");
-
-        verify(customerRepositoryPort, never()).save(any(Customer.class));
     }
 
     @Test
     void whenFindById_withExistingId_shouldReturnCustomerDetails() {
         UUID customerId = UUID.randomUUID();
-        Customer customer = Customer.builder()
-                .customerId(CustomerId.generate())
-                .firstName("Jane")
-                .familyName("Doe")
-                .email("jane.doe@example.com")
-                .phoneNumber("0987654321")
-                .address(defaultAddress)
-                .licenceNumber("12012A123456")
-                .birthDate(defaultBirthDate)
-                .build();
+        Customer customer = Customer.generate("Jane", "Doe", "jane.doe@example.com", "0987654321", defaultAddress, "12012A123456");
         CustomerDetails expectedDetails = CustomerDetails.builder()
                 .firstName("Jane")
                 .familyName("Doe")
                 .email("jane.doe@example.com")
                 .phoneNumber("0987654321")
-                .birthDate(defaultBirthDate)
                 .build();
 
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.of(customer));
@@ -129,7 +97,8 @@ class CustomerServiceTest {
 
         Optional<CustomerDetails> result = customerService.findById(customerId);
 
-        assertThat(result).isPresent().contains(expectedDetails);
+        assertThat(result).isPresent();
+        assertThat(result).contains(expectedDetails);
     }
 
     @Test
@@ -145,16 +114,7 @@ class CustomerServiceTest {
     @Test
     void whenFindAll_shouldReturnAllCustomerDetails() {
         Customer customer1 = defaultCustomer;
-        Customer customer2 = Customer.builder()
-                .customerId(CustomerId.generate())
-                .firstName("Jane")
-                .familyName("Smith")
-                .email("jane.smith@example.com")
-                .phoneNumber("0987654321")
-                .address(defaultAddress)
-                .licenceNumber("12012A123456")
-                .birthDate(defaultBirthDate)
-                .build();
+        Customer customer2 = Customer.generate("Jane", "Smith", "jane.smith@example.com", "0987654321", defaultAddress, "12012A123456");
         List<Customer> customers = List.of(customer1, customer2);
 
         CustomerDetails details1 = defaultCustomerDetails;
@@ -163,7 +123,6 @@ class CustomerServiceTest {
                 .familyName("Smith")
                 .email("jane.smith@example.com")
                 .phoneNumber("0987654321")
-                .birthDate(defaultBirthDate)
                 .build();
 
         when(customerRepositoryPort.findAll()).thenReturn(customers);
@@ -180,23 +139,12 @@ class CustomerServiceTest {
         UUID customerId = UUID.randomUUID();
         CustomerDetails customerDetailsToUpdate = CustomerDetails.builder()
                 .firstName("John")
-
                 .familyName("DoeUpdated")
                 .email("john.doe.updated@example.com")
                 .phoneNumber("1122334455")
                 .licenceNumber("12012A123456")
-                .birthDate(defaultBirthDate)
                 .build();
-        Customer existingCustomer = Customer.builder()
-                .customerId(CustomerId.generate())
-                .firstName("John")
-                .familyName("Doe")
-                .email("john.doe@example.com")
-                .phoneNumber("1234567890")
-                .address(defaultAddress)
-                .licenceNumber("12012A123456")
-                .birthDate(defaultBirthDate)
-                .build();
+        Customer existingCustomer = Customer.generate("John", "Doe", "john.doe@example.com", "1234567890", defaultAddress, "12012A123456");
 
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.of(existingCustomer));
         when(customerRepositoryPort.save(any(Customer.class))).thenReturn(existingCustomer);
@@ -206,7 +154,8 @@ class CustomerServiceTest {
 
         verify(customerRepositoryPort).save(existingCustomer);
         assertThat(existingCustomer.getFamilyName()).isEqualTo("DoeUpdated");
-        assertThat(result).isPresent().contains(customerDetailsToUpdate);
+        assertThat(result).isPresent();
+        assertThat(result).contains(customerDetailsToUpdate);
     }
 
     @Test
@@ -218,7 +167,6 @@ class CustomerServiceTest {
                 .email("john.doe@example.com")
                 .phoneNumber("1234567890")
                 .licenceNumber("12012A123456")
-                .birthDate(defaultBirthDate)
                 .build();
         when(customerRepositoryPort.findById(customerId)).thenReturn(Optional.empty());
 
@@ -244,5 +192,4 @@ class CustomerServiceTest {
         assertThatThrownBy(() -> customerService.delete(customerId))
                 .isInstanceOf(CustomerNotFoundException.class);
     }
-
 }

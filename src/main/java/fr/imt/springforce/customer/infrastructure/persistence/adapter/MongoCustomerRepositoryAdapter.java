@@ -71,21 +71,11 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return customerRepository.existsByEmail(email);
-    }
-
-    @Override
     public void deleteById(UUID id) {
         if (!customerRepository.existsByPublicId(id)) {
             throw new CustomerNotFoundException(String.format("Customer with ID %s not found", id));
         }
         customerRepository.deleteByPublicId(id);
-    }
-
-    @Override
-    public boolean existsByFirstNameAndFamilyNameAndBirthDate(String firstName, String familyName, java.time.Instant birthDate) {
-        return customerRepository.existsByFirstNameAndFamilyNameAndBirthDate(firstName, familyName, birthDate);
     }
 
 }

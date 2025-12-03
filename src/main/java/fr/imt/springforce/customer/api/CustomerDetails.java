@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Value;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Value
@@ -29,8 +28,6 @@ public class CustomerDetails {
     String phoneNumber;
 
     String licenceNumber;
-
-    Instant birthDate;
 
     Address address;
 

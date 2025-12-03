@@ -4,18 +4,16 @@ import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.domain.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
 
     @Mapping(source = "customerId.id", target = "id")
+    @Mapping(source = "licenceNumber", target = "licenceNumber")
     CustomerDetails toCustomerDetails(Customer customer);
 
-    @Mapping(target = "customerId", ignore = true)
+    @Mapping(source = "id", target = "customerId.id")
+    @Mapping(source = "licenceNumber", target = "licenceNumber")
     Customer toCustomer(CustomerDetails customerDetails);
-
-    @Mapping(target = "customerId", ignore = true)
-    void updateCustomerFromDetails(CustomerDetails customerDetails, @MappingTarget Customer customer);
 
 }

@@ -18,14 +18,10 @@ public interface CustomerRepositoryPort {
 
     Optional<Customer> update(Customer customer, UUID id);
 
-    boolean existsByEmail(String licenceNumber);
-
     boolean existsById(UUID id);
 
     boolean existsByLicenceNumber(String licenceNumber);
 
     void deleteById(UUID id);
-
-    boolean existsByFirstNameAndFamilyNameAndBirthDate(String firstName, String familyName, java.time.Instant birthDate);
 
 }
