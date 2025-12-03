@@ -1,9 +1,6 @@
 package fr.imt.springforce.vehicle.business.service;
 
 import fr.imt.springforce.common.validation.ValidationChain;
-import fr.imt.springforce.vehicle.api.VehicleClient;
-import fr.imt.springforce.vehicle.api.VehicleDetails;
-import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
@@ -12,60 +9,47 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-class VehicleService implements VehicleClient {
+public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleValidator vehicleValidator;
-    private final VehicleMapper vehicleMapper;
 
-    @Override
-    public List<VehicleDetails> findAll() {
-        return vehicleRepository.findAll().stream()
-                .map(vehicleMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Vehicle> findAll() {
+        return vehicleRepository.findAll();
     }
 
-    @Override
-    public Optional<VehicleDetails> findById(String vehicleId) {
-        return vehicleRepository.findById(vehicleId)
-                .map(vehicleMapper::toDto);
+    public Vehicle findById(String vehicleId) {
+        return vehicleRepository.findById(vehicleId).orElse(null);
     }
 
-    @Override
-    public Optional<VehicleDetails> create(VehicleDetails vehicleDetails) {
-        ValidationChain.of(vehicleValidator).validate(vehicleDetails.getMatriculation());
-        Vehicle vehicle = vehicleMapper.toEntity(vehicleDetails);
-        Vehicle savedVehicle = vehicleRepository.save(vehicle);
-        return Optional.of(vehicleMapper.toDto(savedVehicle));
+    public Vehicle create(Vehicle vehicle) {
+        ValidationChain.of(vehicleValidator).validate(vehicle.getMatriculation());
+        return vehicleRepository.save(vehicle);
     }
 
-    @Override
-    public Optional<VehicleDetails> update(VehicleDetails vehicleDetails, String vehicleId) {
+    public Vehicle update(Vehicle vehicle, String vehicleId) {
         return vehicleRepository.findById(vehicleId).map(existingVehicle -> {
-            if (!Objects.equals(existingVehicle.getMatriculation(), vehicleDetails.getMatriculation())) {
-                ValidationChain.of(vehicleValidator).validate(vehicleDetails.getMatriculation());
-                existingVehicle.setMatriculation(vehicleDetails.getMatriculation());
+            if (!Objects.equals(existingVehicle.getMatriculation(), vehicle.getMatriculation())) {
+                ValidationChain.of(vehicleValidator).validate(vehicle.getMatriculation());
+                existingVehicle.setMatriculation(vehicle.getMatriculation());
             }
 
-            existingVehicle.setBrand(vehicleDetails.getBrand());
-            existingVehicle.setModel(vehicleDetails.getModel());
-            existingVehicle.setMotorization(vehicleDetails.getMotorization());
-            existingVehicle.setColor(vehicleDetails.getColor());
-            existingVehicle.setAcquisitionDate(vehicleDetails.getAcquisitionDate());
-            existingVehicle.setState(vehicleDetails.getState());
+            existingVehicle.setBrand(vehicle.getBrand());
+            existingVehicle.setModel(vehicle.getModel());
+            existingVehicle.setMotorization(vehicle.getMotorization());
+            existingVehicle.setColor(vehicle.getColor());
+            existingVehicle.setAcquisitionDate(vehicle.getAcquisitionDate());
+            existingVehicle.setState(vehicle.getState());
 
-            Vehicle updatedVehicle = vehicleRepository.save(existingVehicle);
-            return vehicleMapper.toDto(updatedVehicle);
-        });
+            return vehicleRepository.save(existingVehicle);
+        }).orElse(null);
     }
 
-    @Override
     public void delete(String vehicleId) {
         vehicleRepository.deleteById(vehicleId);
     }
+
 }

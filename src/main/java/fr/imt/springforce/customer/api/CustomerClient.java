@@ -8,7 +8,7 @@ public interface CustomerClient {
 
     Collection<CustomerDetails> findAll();
 
-    Optional<CustomerDetails> save(CustomerDetails customer);
+    Optional<CustomerDetails> create(CustomerDetails customer);
 
     Optional<CustomerDetails> update(CustomerDetails customer, UUID id);
 

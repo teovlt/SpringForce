@@ -1,31 +1,29 @@
 package fr.imt.springforce.customer.application;
 
 import fr.imt.springforce.common.validation.ValidationChain;
-import fr.imt.springforce.customer.api.CustomerClient;
 import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import fr.imt.springforce.customer.application.mapper.CustomerMapper;
 import fr.imt.springforce.customer.domain.Customer;
 import fr.imt.springforce.customer.domain.policies.AddressValidator;
 import fr.imt.springforce.customer.domain.policies.LicenceValidator;
+import fr.imt.springforce.customer.domain.policies.UniquenessValidator;
 import fr.imt.springforce.customer.domain.port.out.CustomerRepositoryPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-class CustomerService implements CustomerClient {
+public class CustomerService {
 
     private final CustomerRepositoryPort customerRepositoryPort;
     private final CustomerMapper customerMapper;
 
-    @Override
-    public Optional<CustomerDetails> save(@Valid CustomerDetails customerDetails) {
+    public CustomerDetails save(@Valid CustomerDetails customerDetails) {
         validateCustomerDetails(customerDetails);
 
         Customer customer = Customer.generate(
@@ -39,16 +37,15 @@ class CustomerService implements CustomerClient {
         customer.setAddress(customerDetails.getAddress());
 
         Customer savedCustomer = customerRepositoryPort.save(customer);
-        return Optional.of(customerMapper.toCustomerDetails(savedCustomer));
+        return customerMapper.toCustomerDetails(savedCustomer);
     }
 
-    @Override
-    public Optional<CustomerDetails> findById(UUID id) {
-        return customerRepositoryPort.findById(id)
-                .map(customerMapper::toCustomerDetails);
+    public CustomerDetails findById(UUID id) {
+        Customer customer = customerRepositoryPort.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
+        return customerMapper.toCustomerDetails(customer);
     }
 
-    @Override
     public Collection<CustomerDetails> findAll() {
         Collection<Customer> customers = customerRepositoryPort.findAll();
         return customers.stream()
@@ -56,8 +53,7 @@ class CustomerService implements CustomerClient {
                 .toList();
     }
 
-    @Override
-    public Optional<CustomerDetails> update(@Valid CustomerDetails customerDetails, UUID id) {
+    public CustomerDetails update(UUID id, @Valid CustomerDetails customerDetails) {
         validateCustomerDetails(customerDetails);
 
         Customer existingCustomer = customerRepositoryPort.findById(id)
@@ -71,10 +67,9 @@ class CustomerService implements CustomerClient {
         existingCustomer.setLicenceNumber(customerDetails.getLicenceNumber());
 
         customerRepositoryPort.save(existingCustomer);
-        return Optional.of(customerMapper.toCustomerDetails(existingCustomer));
+        return customerMapper.toCustomerDetails(existingCustomer);
     }
 
-    @Override
     public void delete(UUID id) {
         if (!customerRepositoryPort.existsById(id)) {
             throw new CustomerNotFoundException(id.toString());
@@ -89,7 +84,9 @@ class CustomerService implements CustomerClient {
                         new AddressValidator().validate(details.getAddress(), result);
                     }
                 },
-                (details, result) -> new LicenceValidator().validate(details.getLicenceNumber(), result)
+                (details, result) -> new LicenceValidator().validate(details.getLicenceNumber(), result),
+                new UniquenessValidator(this.customerRepositoryPort)
         ).validate(customerDetails);
     }
+
 }
