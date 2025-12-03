@@ -6,8 +6,10 @@ import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import fr.imt.springforce.customer.application.mapper.CustomerMapper;
 import fr.imt.springforce.customer.domain.Customer;
+import fr.imt.springforce.customer.domain.CustomerId;
 import fr.imt.springforce.customer.domain.policies.AddressValidator;
 import fr.imt.springforce.customer.domain.policies.LicenceValidator;
+import fr.imt.springforce.customer.domain.policies.UniquenessValidator;
 import fr.imt.springforce.customer.domain.port.out.CustomerRepositoryPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,15 +30,8 @@ class CustomerService implements CustomerClient {
     public Optional<CustomerDetails> save(@Valid CustomerDetails customerDetails) {
         validateCustomerDetails(customerDetails);
 
-        Customer customer = Customer.generate(
-                customerDetails.getFirstName(),
-                customerDetails.getFamilyName(),
-                customerDetails.getEmail(),
-                customerDetails.getPhoneNumber(),
-                customerDetails.getAddress(),
-                customerDetails.getLicenceNumber()
-        );
-        customer.setAddress(customerDetails.getAddress());
+        Customer customer = customerMapper.toCustomer(customerDetails);
+        customer.setCustomerId(CustomerId.generate());
 
         Customer savedCustomer = customerRepositoryPort.save(customer);
         return Optional.of(customerMapper.toCustomerDetails(savedCustomer));
@@ -63,12 +58,7 @@ class CustomerService implements CustomerClient {
         Customer existingCustomer = customerRepositoryPort.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
 
-        existingCustomer.setFirstName(customerDetails.getFirstName());
-        existingCustomer.setFamilyName(customerDetails.getFamilyName());
-        existingCustomer.setEmail(customerDetails.getEmail());
-        existingCustomer.setPhoneNumber(customerDetails.getPhoneNumber());
-        existingCustomer.setAddress(customerDetails.getAddress());
-        existingCustomer.setLicenceNumber(customerDetails.getLicenceNumber());
+        customerMapper.updateCustomerFromDetails(customerDetails, existingCustomer);
 
         customerRepositoryPort.save(existingCustomer);
         return Optional.of(customerMapper.toCustomerDetails(existingCustomer));
@@ -89,7 +79,9 @@ class CustomerService implements CustomerClient {
                         new AddressValidator().validate(details.getAddress(), result);
                     }
                 },
-                (details, result) -> new LicenceValidator().validate(details.getLicenceNumber(), result)
+                (details, result) -> new LicenceValidator().validate(details.getLicenceNumber(), result),
+                new UniquenessValidator(customerRepositoryPort)
         ).validate(customerDetails);
     }
+
 }
