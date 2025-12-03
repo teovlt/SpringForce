@@ -1,21 +1,19 @@
 package fr.imt.springforce.customer.application;
 
-import fr.imt.springforce.common.exception.ValidationException;
+import fr.imt.springforce.common.validation.ValidationChain;
 import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.api.CustomerNotFoundException;
 import fr.imt.springforce.customer.application.mapper.CustomerMapper;
 import fr.imt.springforce.customer.domain.Customer;
 import fr.imt.springforce.customer.domain.policies.AddressValidator;
 import fr.imt.springforce.customer.domain.policies.LicenceValidator;
+import fr.imt.springforce.customer.domain.policies.UniquenessValidator;
 import fr.imt.springforce.customer.domain.port.out.CustomerRepositoryPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -26,23 +24,7 @@ public class CustomerService {
     private final CustomerMapper customerMapper;
 
     public CustomerDetails save(@Valid CustomerDetails customerDetails) {
-        List<String> allErrors = new ArrayList<>();
-
-        if (customerDetails.getAddress() != null) {
-            Set<String> addressErrors = AddressValidator.validate(customerDetails.getAddress());
-            if (!addressErrors.isEmpty()) {
-                allErrors.add("Invalid address: " + String.join(", ", addressErrors));
-            }
-        }
-
-        Set<String> licenceErrors = LicenceValidator.validate(customerDetails.getLicenceNumber());
-        if (!licenceErrors.isEmpty()) {
-            allErrors.add("Invalid licence number: " + String.join(", ", licenceErrors));
-        }
-
-        if (!allErrors.isEmpty()) {
-            throw new ValidationException(String.join("; ", allErrors));
-        }
+        validateCustomerDetails(customerDetails);
 
         Customer customer = Customer.generate(
                 customerDetails.getFirstName(),
@@ -72,22 +54,7 @@ public class CustomerService {
     }
 
     public CustomerDetails update(UUID id, @Valid CustomerDetails customerDetails) {
-        List<String> allErrors = new ArrayList<>();
-
-        if (customerDetails.getAddress() != null) {
-            Set<String> addressErrors = AddressValidator.validate(customerDetails.getAddress());
-            if (!addressErrors.isEmpty()) {
-                allErrors.add("Invalid address: " + String.join(", ", addressErrors));
-            }
-        }
-        Set<String> licenceErrors = LicenceValidator.validate(customerDetails.getLicenceNumber());
-        if (!licenceErrors.isEmpty()) {
-            allErrors.add("Invalid licence number: " + String.join(", ", licenceErrors));
-        }
-
-        if (!allErrors.isEmpty()) {
-            throw new ValidationException(String.join("; ", allErrors));
-        }
+        validateCustomerDetails(customerDetails);
 
         Customer existingCustomer = customerRepositoryPort.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
@@ -108,6 +75,18 @@ public class CustomerService {
             throw new CustomerNotFoundException(id.toString());
         }
         customerRepositoryPort.deleteById(id);
+    }
+
+    private void validateCustomerDetails(CustomerDetails customerDetails) {
+        ValidationChain.<CustomerDetails>of(
+                (details, result) -> {
+                    if (details.getAddress() != null) {
+                        new AddressValidator().validate(details.getAddress(), result);
+                    }
+                },
+                (details, result) -> new LicenceValidator().validate(details.getLicenceNumber(), result),
+                new UniquenessValidator(this.customerRepositoryPort)
+        ).validate(customerDetails);
     }
 
 }
