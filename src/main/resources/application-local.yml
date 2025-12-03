@@ -1,8 +1,12 @@
 spring:
 
+  mvc:
+    throw-exception-if-no-handler-found: true
   application:
     name: car-lease-system
-
+  modulith:
+    shared-modules:
+      - common
   data:
     mongodb:
       uuid-representation: standard

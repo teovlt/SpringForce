@@ -2,6 +2,7 @@ package fr.imt.springforce.vehicle.business.service;
 
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
+import fr.imt.springforce.vehicle.infrastructure.exceptions.VehicleAlreadyExistsException;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

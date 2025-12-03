@@ -1,6 +1,5 @@
 package fr.imt.springforce.customer.api;
 
-import fr.imt.springforce.customer.domain.Address;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -26,7 +25,5 @@ public class CustomerDetails {
 
     @NotBlank
     String phoneNumber;
-
-    Address address;
 
 }

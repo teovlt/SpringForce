@@ -1,4 +1,4 @@
-package fr.imt.springforce.common.exception;
+package fr.imt.springforce.common;
 
 public abstract class ResourceNotFoundException extends RuntimeException {
 

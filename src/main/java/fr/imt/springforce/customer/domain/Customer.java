@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.Instant;
-
 @AllArgsConstructor
 @Data
 @Builder
@@ -35,10 +33,5 @@ public class Customer {
 
     private String phoneNumber;
 
-    private String licenceNumber;
-
-    private Instant birthDate;
-
-    private Address address;
 
 }

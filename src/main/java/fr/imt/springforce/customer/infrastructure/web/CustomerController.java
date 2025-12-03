@@ -1,7 +1,7 @@
 package fr.imt.springforce.customer.infrastructure.web;
 
 import fr.imt.springforce.customer.api.CustomerDetails;
-import fr.imt.springforce.customer.application.CustomerService;
+import fr.imt.springforce.customer.domain.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

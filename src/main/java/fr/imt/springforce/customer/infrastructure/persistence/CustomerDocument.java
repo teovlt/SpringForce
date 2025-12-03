@@ -1,6 +1,5 @@
 package fr.imt.springforce.customer.infrastructure.persistence;
 
-import fr.imt.springforce.customer.domain.Address;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -27,7 +26,5 @@ public class CustomerDocument {
     private String email;
 
     private String phoneNumber;
-
-    private Address address;
 
 }
