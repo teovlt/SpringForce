@@ -1,11 +1,14 @@
 package fr.imt.springforce.vehicle.business.service;
 
+import fr.imt.springforce.common.validation.ValidationChain;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -23,23 +26,30 @@ public class VehicleService {
     }
 
     public Vehicle create(Vehicle vehicle) {
-        vehicleValidator.verifyMatriculationUnicity(vehicle.getMatriculation());
+        ValidationChain.of(vehicleValidator).validate(vehicle.getMatriculation());
         return vehicleRepository.save(vehicle);
     }
 
     public Vehicle update(Vehicle vehicle, String vehicleId) {
-        Vehicle updatedVehicle = vehicleRepository.findById(vehicleId).orElse(null);
+        return vehicleRepository.findById(vehicleId).map(existingVehicle -> {
+            if (!Objects.equals(existingVehicle.getMatriculation(), vehicle.getMatriculation())) {
+                ValidationChain.of(vehicleValidator).validate(vehicle.getMatriculation());
+                existingVehicle.setMatriculation(vehicle.getMatriculation());
+            }
 
-        if (updatedVehicle != null) {
-            vehicleValidator.verifyMatriculationUnicity(vehicle.getMatriculation());
-            return vehicleRepository.save(updatedVehicle);
-        }else{
-            return null;
-        }
+            existingVehicle.setBrand(vehicle.getBrand());
+            existingVehicle.setModel(vehicle.getModel());
+            existingVehicle.setMotorization(vehicle.getMotorization());
+            existingVehicle.setColor(vehicle.getColor());
+            existingVehicle.setAcquisitionDate(vehicle.getAcquisitionDate());
+            existingVehicle.setState(vehicle.getState());
+
+            return vehicleRepository.save(existingVehicle);
+        }).orElse(null);
     }
 
     public void delete(String vehicleId) {
-         vehicleRepository.deleteById(vehicleId);
+        vehicleRepository.deleteById(vehicleId);
     }
 
 }
