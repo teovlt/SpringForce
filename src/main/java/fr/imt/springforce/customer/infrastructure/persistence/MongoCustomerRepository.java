@@ -8,8 +8,6 @@ public interface MongoCustomerRepository extends MongoRepository<CustomerDocumen
 
     boolean existsById(UUID id);
 
-    boolean existsByLicenceNumber(String licenceNumber);
-
     void deleteById(UUID id);
 
     CustomerDocument findByEmail(String email);

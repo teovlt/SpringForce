@@ -68,11 +68,6 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
     }
 
     @Override
-    public boolean existsByLicenceNumber(String licenceNumber) {
-        return customerRepository.existsByLicenceNumber(licenceNumber);
-    }
-
-    @Override
     public void deleteById(UUID id) {
         if (!customerRepository.existsById(id)) {
             throw new CustomerNotFoundException(String.format("Customer with ID %s not found", id));

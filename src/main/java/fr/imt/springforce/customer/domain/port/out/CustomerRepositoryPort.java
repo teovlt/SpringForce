@@ -20,8 +20,6 @@ public interface CustomerRepositoryPort {
 
     boolean existsById(UUID id);
 
-    boolean existsByLicenceNumber(String licenceNumber);
-
     void deleteById(UUID id);
 
 }

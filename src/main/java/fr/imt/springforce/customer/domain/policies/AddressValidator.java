@@ -7,7 +7,6 @@
 package fr.imt.springforce.customer.domain.policies;
 
 import fr.imt.springforce.customer.domain.Address;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import java.util.regex.Pattern;
 /**
  * Validates postal address
  */
-@Service
 public class AddressValidator {
 
     private static final Map<String, String> VALID_COUNTRY_CODE = new HashMap<>();
@@ -40,11 +38,11 @@ public class AddressValidator {
 
         // Validate mandatory fields
         validateCountryCode(address, errors);
+        validateCity(address, errors);
 
         // Validate field formats
         validatePostalCode(address, errors);
         validateStreetNumber(address, errors);
-        validateCity(address, errors);
 
         return errors;
     }

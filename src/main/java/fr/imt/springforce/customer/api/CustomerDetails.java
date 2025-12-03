@@ -27,8 +27,6 @@ public class CustomerDetails {
     @NotBlank
     String phoneNumber;
 
-    String licenceNumber;
-
     Address address;
 
 }

@@ -9,11 +9,9 @@ import org.mapstruct.Mapping;
 public interface CustomerMapper {
 
     @Mapping(source = "customerId.id", target = "id")
-    @Mapping(source = "licenceNumber", target = "licenceNumber")
     CustomerDetails toCustomerDetails(Customer customer);
 
     @Mapping(source = "id", target = "customerId.id")
-    @Mapping(source = "licenceNumber", target = "licenceNumber")
     Customer toCustomer(CustomerDetails customerDetails);
 
 }
