@@ -30,6 +30,8 @@ public class CustomerDocument {
 
     private String licenceNumber;
 
+    private java.time.Instant birthDate;
+
     private Address address;
 
 }
