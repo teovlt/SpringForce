@@ -35,10 +35,6 @@ public class HttpResponse<T> {
         return new HttpResponse<>(message, null, List.of(error));
     }
 
-    public static HttpResponse<Void> error(String message, List<String> errors) {
-        return new HttpResponse<>(message, null, errors);
-    }
-
     public static HttpResponse<Void> error(String message) {
         return new HttpResponse<>(message, null, null);
     }

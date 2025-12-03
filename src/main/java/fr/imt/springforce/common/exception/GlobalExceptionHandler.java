@@ -40,10 +40,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<HttpResponse<Void>> handleValidationException(ValidationException ex) {
-        log.error("Validation error: {}", ex.getErrors());
+        log.error("Validation error: {}", ex.getMessage());
         HttpResponse<Void> errorResponse = HttpResponse.error(
                 "Validation Failed",
-                ex.getErrors()
+                ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
