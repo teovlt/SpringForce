@@ -1,9 +1,10 @@
 package fr.imt.springforce.vehicle.business.service;
 
+import fr.imt.springforce.common.exception.ValidationException;
+import fr.imt.springforce.common.validation.ValidationResult;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.model.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
-import fr.imt.springforce.vehicle.infrastructure.exceptions.VehicleAlreadyExistsException;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,46 +81,65 @@ class VehicleServiceTest {
 
     @Test
     void whenCreate_withUniqueMatriculation_shouldReturnSavedVehicle() {
-        doNothing().when(vehicleValidator).verifyMatriculationUnicity(testVehicle.getMatriculation());
         when(vehicleRepository.save(any(Vehicle.class))).thenReturn(testVehicle);
 
         Vehicle result = vehicleService.create(testVehicle);
 
         assertThat(result).isEqualTo(testVehicle);
-        verify(vehicleValidator).verifyMatriculationUnicity(testVehicle.getMatriculation());
+        verify(vehicleValidator).validate(eq(testVehicle.getMatriculation()), any(ValidationResult.class));
         verify(vehicleRepository).save(testVehicle);
     }
 
     @Test
-    void whenCreate_withExistingMatriculation_shouldThrowException() {
-        doThrow(new VehicleAlreadyExistsException("Matriculation already exists")).when(vehicleValidator).verifyMatriculationUnicity(testVehicle.getMatriculation());
+    void whenCreate_withExistingMatriculation_shouldThrowValidationException() {
+        doAnswer(invocation -> {
+            ValidationResult result = invocation.getArgument(1);
+            result.addError("Plaque déjà prise !");
+            return null;
+        }).when(vehicleValidator).validate(eq(testVehicle.getMatriculation()), any(ValidationResult.class));
 
         assertThatThrownBy(() -> vehicleService.create(testVehicle))
-                .isInstanceOf(VehicleAlreadyExistsException.class)
-                .hasMessage("Matriculation already exists");
+                .isInstanceOf(ValidationException.class);
         verify(vehicleRepository, never()).save(any(Vehicle.class));
     }
 
     @Test
-    void whenUpdate_withExistingId_shouldReturnUpdatedVehicle() {
+    void whenUpdate_withExistingIdAndUniqueMatriculation_shouldReturnUpdatedVehicle() {
         Vehicle updatedDetails = Vehicle.builder()
-                .id(testVehicle.getId())
-                .brand("BrandX")
+                .brand("BrandNew")
                 .model("ModelZ")
-                .color("Blue")
-                .state(VehicleState.IN_LOCATION)
                 .matriculation("NEW-456-MAT")
                 .build();
 
         when(vehicleRepository.findById(testVehicle.getId())).thenReturn(Optional.of(testVehicle));
-        doNothing().when(vehicleValidator).verifyMatriculationUnicity(updatedDetails.getMatriculation());
-        when(vehicleRepository.save(any(Vehicle.class))).thenReturn(updatedDetails);
+        when(vehicleRepository.save(any(Vehicle.class))).thenAnswer(i -> i.getArgument(0));
 
         Vehicle result = vehicleService.update(updatedDetails, testVehicle.getId());
 
-        assertThat(result).isEqualTo(updatedDetails);
-        verify(vehicleValidator).verifyMatriculationUnicity(updatedDetails.getMatriculation());
+        assertThat(result.getBrand()).isEqualTo("BrandNew");
+        assertThat(result.getModel()).isEqualTo("ModelZ");
+        assertThat(result.getMatriculation()).isEqualTo("NEW-456-MAT");
+        verify(vehicleValidator).validate(eq(updatedDetails.getMatriculation()), any(ValidationResult.class));
         verify(vehicleRepository).save(any(Vehicle.class));
+    }
+
+    @Test
+    void whenUpdate_withExistingMatriculation_shouldThrowValidationException() {
+        Vehicle updatedDetails = Vehicle.builder()
+                .matriculation("NEW-456-MAT")
+                .build();
+
+        when(vehicleRepository.findById(testVehicle.getId())).thenReturn(Optional.of(testVehicle));
+        doAnswer(invocation -> {
+            ValidationResult result = invocation.getArgument(1);
+            result.addError("Plaque déjà prise !");
+            return null;
+        }).when(vehicleValidator).validate(eq(updatedDetails.getMatriculation()), any(ValidationResult.class));
+
+        assertThatThrownBy(() -> vehicleService.update(updatedDetails, testVehicle.getId()))
+                .isInstanceOf(ValidationException.class);
+
+        verify(vehicleRepository, never()).save(any(Vehicle.class));
     }
 
     @Test
@@ -130,16 +150,13 @@ class VehicleServiceTest {
         Vehicle result = vehicleService.update(updatedDetails, "nonExistentID");
 
         assertThat(result).isNull();
-        verify(vehicleValidator, never()).verifyMatriculationUnicity(anyString());
+        verify(vehicleValidator, never()).validate(anyString(), any());
         verify(vehicleRepository, never()).save(any(Vehicle.class));
     }
 
     @Test
     void whenDelete_shouldCallRepositoryDelete() {
-        doNothing().when(vehicleRepository).deleteById(testVehicle.getId());
-
         vehicleService.delete(testVehicle.getId());
-
         verify(vehicleRepository).deleteById(testVehicle.getId());
     }
 }

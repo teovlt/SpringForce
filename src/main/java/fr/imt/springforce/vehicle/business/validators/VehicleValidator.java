@@ -1,19 +1,21 @@
 package fr.imt.springforce.vehicle.business.validators;
 
-import fr.imt.springforce.vehicle.infrastructure.exceptions.VehicleAlreadyExistsException;
+import fr.imt.springforce.common.validation.ValidationResult;
+import fr.imt.springforce.common.validation.Validator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class VehicleValidator {
+public class VehicleValidator implements Validator<String> {
 
     private final VehicleRepository vehicleRepository;
 
-    public void verifyMatriculationUnicity(String matriculation){
+    @Override
+    public void validate(String matriculation, ValidationResult result) {
         if (vehicleRepository.existsByMatriculation(matriculation)) {
-            throw new VehicleAlreadyExistsException("Plaque déjà prise !");
+            result.addError("Plaque déjà prise !");
         }
     }
 }
