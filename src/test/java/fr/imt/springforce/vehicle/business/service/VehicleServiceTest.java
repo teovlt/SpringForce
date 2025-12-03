@@ -2,6 +2,8 @@ package fr.imt.springforce.vehicle.business.service;
 
 import fr.imt.springforce.common.exception.ValidationException;
 import fr.imt.springforce.common.validation.ValidationResult;
+import fr.imt.springforce.vehicle.api.VehicleDetails;
+import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.model.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
@@ -31,10 +33,14 @@ class VehicleServiceTest {
     @Mock
     private VehicleValidator vehicleValidator;
 
+    @Mock
+    private VehicleMapper vehicleMapper;
+
     @InjectMocks
     private VehicleService vehicleService;
 
     private Vehicle testVehicle;
+    private VehicleDetails testVehicleDetails;
 
     @BeforeEach
     void setUp() {
@@ -48,45 +54,62 @@ class VehicleServiceTest {
                 .acquisitionDate(LocalDate.of(2022, 1, 1))
                 .state(VehicleState.AVAILABLE)
                 .build();
+
+        testVehicleDetails = VehicleDetails.builder()
+                .id("ID123")
+                .brand("BrandX")
+                .model("ModelY")
+                .motorization("Electric")
+                .color("Red")
+                .matriculation("ABC-123-DE")
+                .acquisitionDate(LocalDate.of(2022, 1, 1))
+                .state(VehicleState.AVAILABLE)
+                .build();
     }
 
     @Test
-    void whenFindAll_shouldReturnAllVehicles() {
-        List<Vehicle> vehicles = List.of(testVehicle, Vehicle.builder().id("ID456").build());
+    void whenFindAll_shouldReturnAllVehicleDetails() {
+        List<Vehicle> vehicles = List.of(testVehicle);
         when(vehicleRepository.findAll()).thenReturn(vehicles);
+        when(vehicleMapper.toDto(any(Vehicle.class))).thenReturn(testVehicleDetails);
 
-        List<Vehicle> result = vehicleService.findAll();
+        List<VehicleDetails> result = vehicleService.findAll();
 
-        assertThat(result).hasSize(2);
-        assertThat(result).containsExactlyInAnyOrder(vehicles.toArray(new Vehicle[0]));
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isEqualTo(testVehicleDetails);
     }
 
     @Test
-    void whenFindById_withExistingId_shouldReturnVehicle() {
+    void whenFindById_withExistingId_shouldReturnVehicleDetails() {
         when(vehicleRepository.findById(testVehicle.getId())).thenReturn(Optional.of(testVehicle));
+        when(vehicleMapper.toDto(testVehicle)).thenReturn(testVehicleDetails);
 
-        Vehicle result = vehicleService.findById(testVehicle.getId());
+        Optional<VehicleDetails> result = vehicleService.findById(testVehicle.getId());
 
-        assertThat(result).isEqualTo(testVehicle);
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEqualTo(testVehicleDetails);
     }
 
     @Test
-    void whenFindById_withNonExistingId_shouldReturnNull() {
+    void whenFindById_withNonExistingId_shouldReturnEmptyOptional() {
         when(vehicleRepository.findById("nonExistentId")).thenReturn(Optional.empty());
 
-        Vehicle result = vehicleService.findById("nonExistentId");
+        Optional<VehicleDetails> result = vehicleService.findById("nonExistentId");
 
-        assertThat(result).isNull();
+        assertThat(result).isNotPresent();
     }
 
     @Test
-    void whenCreate_withUniqueMatriculation_shouldReturnSavedVehicle() {
+    void whenCreate_withUniqueMatriculation_shouldReturnSavedVehicleDetails() {
+        when(vehicleMapper.toEntity(testVehicleDetails)).thenReturn(testVehicle);
         when(vehicleRepository.save(any(Vehicle.class))).thenReturn(testVehicle);
+        when(vehicleMapper.toDto(testVehicle)).thenReturn(testVehicleDetails);
 
-        Vehicle result = vehicleService.create(testVehicle);
+        Optional<VehicleDetails> result = vehicleService.create(testVehicleDetails);
 
-        assertThat(result).isEqualTo(testVehicle);
-        verify(vehicleValidator).validate(eq(testVehicle.getMatriculation()), any(ValidationResult.class));
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEqualTo(testVehicleDetails);
+        verify(vehicleValidator).validate(eq(testVehicleDetails.getMatriculation()), any(ValidationResult.class));
         verify(vehicleRepository).save(testVehicle);
     }
 
@@ -96,16 +119,16 @@ class VehicleServiceTest {
             ValidationResult result = invocation.getArgument(1);
             result.addError("Plaque déjà prise !");
             return null;
-        }).when(vehicleValidator).validate(eq(testVehicle.getMatriculation()), any(ValidationResult.class));
+        }).when(vehicleValidator).validate(eq(testVehicleDetails.getMatriculation()), any(ValidationResult.class));
 
-        assertThatThrownBy(() -> vehicleService.create(testVehicle))
+        assertThatThrownBy(() -> vehicleService.create(testVehicleDetails))
                 .isInstanceOf(ValidationException.class);
         verify(vehicleRepository, never()).save(any(Vehicle.class));
     }
 
     @Test
     void whenUpdate_withExistingIdAndUniqueMatriculation_shouldReturnUpdatedVehicle() {
-        Vehicle updatedDetails = Vehicle.builder()
+        VehicleDetails updatedDetails = VehicleDetails.builder()
                 .brand("BrandNew")
                 .model("ModelZ")
                 .matriculation("NEW-456-MAT")
@@ -113,19 +136,21 @@ class VehicleServiceTest {
 
         when(vehicleRepository.findById(testVehicle.getId())).thenReturn(Optional.of(testVehicle));
         when(vehicleRepository.save(any(Vehicle.class))).thenAnswer(i -> i.getArgument(0));
+        when(vehicleMapper.toDto(any(Vehicle.class))).thenReturn(updatedDetails);
 
-        Vehicle result = vehicleService.update(updatedDetails, testVehicle.getId());
+        Optional<VehicleDetails> result = vehicleService.update(updatedDetails, testVehicle.getId());
 
-        assertThat(result.getBrand()).isEqualTo("BrandNew");
-        assertThat(result.getModel()).isEqualTo("ModelZ");
-        assertThat(result.getMatriculation()).isEqualTo("NEW-456-MAT");
+        assertThat(result).isPresent();
+        assertThat(result.get().getBrand()).isEqualTo("BrandNew");
+        assertThat(result.get().getModel()).isEqualTo("ModelZ");
+        assertThat(result.get().getMatriculation()).isEqualTo("NEW-456-MAT");
         verify(vehicleValidator).validate(eq(updatedDetails.getMatriculation()), any(ValidationResult.class));
         verify(vehicleRepository).save(any(Vehicle.class));
     }
 
     @Test
     void whenUpdate_withExistingMatriculation_shouldThrowValidationException() {
-        Vehicle updatedDetails = Vehicle.builder()
+        VehicleDetails updatedDetails = VehicleDetails.builder()
                 .matriculation("NEW-456-MAT")
                 .build();
 
@@ -143,13 +168,13 @@ class VehicleServiceTest {
     }
 
     @Test
-    void whenUpdate_withNonExistingId_shouldReturnNull() {
-        Vehicle updatedDetails = Vehicle.builder().id("nonExistentID").build();
+    void whenUpdate_withNonExistingId_shouldReturnEmptyOptional() {
+        VehicleDetails updatedDetails = VehicleDetails.builder().id("nonExistentID").build();
         when(vehicleRepository.findById("nonExistentID")).thenReturn(Optional.empty());
 
-        Vehicle result = vehicleService.update(updatedDetails, "nonExistentID");
+        Optional<VehicleDetails> result = vehicleService.update(updatedDetails, "nonExistentID");
 
-        assertThat(result).isNull();
+        assertThat(result).isNotPresent();
         verify(vehicleValidator, never()).validate(anyString(), any());
         verify(vehicleRepository, never()).save(any(Vehicle.class));
     }

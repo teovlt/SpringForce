@@ -22,15 +22,14 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
 
     @Override
     public Optional<Customer> findById(UUID id) {
-        CustomerDocument document = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
-        return Optional.of(mapper.toDomain(document));
+        return customerRepository.findByPublicId(id)
+                .map(mapper::toDomain);
     }
 
     @Override
     public Optional<Customer> findByEmail(String email) {
-        CustomerDocument document = customerRepository.findByEmail(email);
-        return Optional.of(mapper.toDomain(document));
+        return Optional.ofNullable(customerRepository.findByEmail(email))
+                .map(mapper::toDomain);
     }
 
     @Override
@@ -41,7 +40,7 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
                 .toList();
     }
 
-   @Override
+    @Override
     public Customer save(Customer customer) {
         CustomerDocument document = customerRepository.save(mapper.toDocument(customer));
         return mapper.toDomain(document);
@@ -49,22 +48,21 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
 
     @Override
     public Optional<Customer> update(Customer customer, UUID id) {
-        CustomerDocument existingDocument = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(id.toString()));
+        return customerRepository.findByPublicId(id)
+                .map(existingDocument -> {
+                    existingDocument.setFirstName(customer.getFirstName());
+                    existingDocument.setFamilyName(customer.getFamilyName());
+                    existingDocument.setEmail(customer.getEmail());
+                    existingDocument.setPhoneNumber(customer.getPhoneNumber());
 
-        existingDocument.setFirstName(customer.getFirstName());
-        existingDocument.setFamilyName(customer.getFamilyName());
-        existingDocument.setEmail(customer.getEmail());
-        existingDocument.setPhoneNumber(customer.getPhoneNumber());
-
-        // Save the updated document
-        CustomerDocument updatedDocument = customerRepository.save(existingDocument);
-        return Optional.of(mapper.toDomain(updatedDocument));
+                    CustomerDocument updatedDocument = customerRepository.save(existingDocument);
+                    return mapper.toDomain(updatedDocument);
+                });
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return customerRepository.existsById(id);
+        return customerRepository.existsByPublicId(id);
     }
 
     @Override
@@ -74,10 +72,10 @@ public class MongoCustomerRepositoryAdapter implements CustomerRepositoryPort {
 
     @Override
     public void deleteById(UUID id) {
-        if (!customerRepository.existsById(id)) {
+        if (!customerRepository.existsByPublicId(id)) {
             throw new CustomerNotFoundException(String.format("Customer with ID %s not found", id));
         }
-        customerRepository.deleteById(id);
+        customerRepository.deleteByPublicId(id);
     }
 
 }
