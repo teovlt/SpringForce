@@ -1,5 +1,4 @@
 spring:
-
   application:
     name: car-lease-system
 
@@ -9,3 +8,14 @@ spring:
       host: localhost
       port: 27017
       database: carLeaseSystem
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        auto.offset.reset: earliest
+        spring.json.value.default.type: fr.imt.springforce.vehicle.business.kafka.VehicleStateChange
+        spring.json.trusted.packages: "fr.imt.springforce.vehicle.*"
