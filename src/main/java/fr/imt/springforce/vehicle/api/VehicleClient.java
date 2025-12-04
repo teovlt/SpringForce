@@ -1,5 +1,8 @@
 package fr.imt.springforce.vehicle.api;
 
+import fr.imt.springforce.vehicle.business.kafka.VehicleStateChange;
+import fr.imt.springforce.vehicle.business.model.VehicleState;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -9,4 +12,5 @@ public interface VehicleClient {
     Optional<VehicleDetails> create(VehicleDetails vehicleDetails);
     Optional<VehicleDetails> update(VehicleDetails vehicleDetails, String vehicleId);
     void delete(String vehicleId);
+    void updateState(VehicleStateChange change);
 }

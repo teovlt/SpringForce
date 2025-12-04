@@ -1,7 +1,10 @@
 package fr.imt.springforce.customer.api;
 
+import org.springframework.modulith.NamedInterface;
+
 import java.util.*;
 
+@NamedInterface("CustomerClient")
 public interface CustomerClient {
 
     Optional<CustomerDetails> findById(UUID id);
