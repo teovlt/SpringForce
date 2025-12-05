@@ -5,7 +5,9 @@ import fr.imt.springforce.vehicle.api.VehicleClient;
 import fr.imt.springforce.vehicle.api.VehicleDetails;
 import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
+import fr.imt.springforce.vehicle.business.model.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
+import fr.imt.springforce.vehicle.business.validators.VehicleStateValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ class VehicleService implements VehicleClient {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleValidator vehicleValidator;
+    private final VehicleStateValidator vehicleStateValidator;
     private final VehicleMapper vehicleMapper;
 
     @Override
@@ -68,4 +71,14 @@ class VehicleService implements VehicleClient {
     public void delete(String vehicleId) {
         vehicleRepository.deleteById(vehicleId);
     }
+
+    @Override
+    public void setVehicleState(VehicleState vehicleState, String vehicleId){
+        ValidationChain.of(vehicleStateValidator).validate(vehicleState);
+        vehicleRepository.findById(vehicleId).ifPresent(vehicle -> {
+            vehicle.setState(vehicleState);
+            vehicleRepository.save(vehicle);
+        });
+    }
 }
+    
