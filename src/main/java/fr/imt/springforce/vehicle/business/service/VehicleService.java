@@ -2,9 +2,10 @@ package fr.imt.springforce.vehicle.business.service;
 
 import fr.imt.springforce.common.validation.ValidationChain;
 import fr.imt.springforce.contract.api.ContractClient;
+import fr.imt.springforce.contract.api.ContractDetails;
 import fr.imt.springforce.vehicle.api.VehicleClient;
 import fr.imt.springforce.vehicle.api.VehicleDetails;
-import fr.imt.springforce.vehicle.business.kafka.VehicleStateChange;
+import fr.imt.springforce.vehicle.business.model.VehicleStateChange;
 import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.model.VehicleState;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,9 +31,7 @@ class VehicleService implements VehicleClient {
 
     @Override
     public List<VehicleDetails> findAll() {
-        return vehicleRepository.findAll().stream()
-                .map(vehicleMapper::toDto)
-                .collect(Collectors.toList());
+        return vehicleMapper.toDtoList(vehicleRepository.findAll());
     }
 
     @Override
@@ -47,17 +45,14 @@ class VehicleService implements VehicleClient {
         ValidationChain.of(vehicleValidator).validate(vehicleDetails.getMatriculation());
         Vehicle vehicle = vehicleMapper.toEntity(vehicleDetails);
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
+        log.info("Saved vehicle with id {}", savedVehicle.getId());
         return Optional.of(vehicleMapper.toDto(savedVehicle));
     }
 
     @Override
     public Optional<VehicleDetails> update(VehicleDetails vehicleDetails, String vehicleId) {
-        // Cancel contracts if a vehicle is set Out of order
-        // Note : SHOULD create dedicated endpoint to set a vehicle to a status
-        // SHOULD not violate modularity
         if (vehicleDetails.getState() == VehicleState.OUT_OF_ORDER) {
-            contractClient.getContractsByVehicle(vehicleId).forEach((contract ->
-                    contractClient.cancelContract(contract.getId(), "OUT OF ORDER")));
+            invalidateRelatedContracts(vehicleId);
         }
 
         return vehicleRepository.findById(vehicleId).map(existingVehicle -> {
@@ -83,8 +78,32 @@ class VehicleService implements VehicleClient {
         vehicleRepository.deleteById(vehicleId);
     }
 
+    /**
+     * Given a vehicle status modification, will update the
+     * @param change vehicle status change notification
+     */
     @Override
     public void updateState(VehicleStateChange change) {
-        log.info("Vehicle state updated : %s to %s", change.getVehicleId(), change.getState().name());
+        log.info("Vehicle state updated : {} to {}", change.getVehicleId(), change.getState().name());
+        // Modify state
+        vehicleRepository.findById(change.getVehicleId()).map(vehicle -> {
+            vehicle.setState(change.getState());
+            return vehicleRepository.save(vehicle);
+        });
+
+        // Invalidate out of order contract
+        if (change.getState() == VehicleState.OUT_OF_ORDER) {
+            invalidateRelatedContracts(change.getVehicleId());
+        }
     }
+
+    /**
+     * Invalidates contracts related to a vehicleId
+     * @param vehicleId vehicleId
+     */
+    private void invalidateRelatedContracts(String vehicleId) {
+        contractClient.getContractsByVehicle(vehicleId).stream().map(ContractDetails::getId)
+                .forEach(contractId -> contractClient.cancelContract(contractId, "Vehicle Out of Order"));
+    }
+
 }

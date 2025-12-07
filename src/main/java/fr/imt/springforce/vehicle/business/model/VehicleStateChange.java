@@ -4,9 +4,8 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.springforce.vehicle.business.kafka;
+package fr.imt.springforce.vehicle.business.model;
 
-import fr.imt.springforce.vehicle.business.model.VehicleState;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

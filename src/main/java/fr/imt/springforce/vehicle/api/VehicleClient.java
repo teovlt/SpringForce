@@ -1,7 +1,6 @@
 package fr.imt.springforce.vehicle.api;
 
-import fr.imt.springforce.vehicle.business.kafka.VehicleStateChange;
-import fr.imt.springforce.vehicle.business.model.VehicleState;
+import fr.imt.springforce.vehicle.business.model.VehicleStateChange;
 
 import java.util.List;
 import java.util.Optional;

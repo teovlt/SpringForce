@@ -7,7 +7,7 @@
 package fr.imt.springforce.vehicle.infrastructure.kafka;
 
 import fr.imt.springforce.vehicle.api.VehicleClient;
-import fr.imt.springforce.vehicle.business.kafka.VehicleStateChange;
+import fr.imt.springforce.vehicle.business.model.VehicleStateChange;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
