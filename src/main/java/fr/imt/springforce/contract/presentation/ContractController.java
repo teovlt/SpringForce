@@ -33,13 +33,9 @@ public class ContractController {
     })
     @PostMapping
     public ResponseEntity<ContractDetails> createContract(@RequestBody ContractDetails contract) {
-        try {
             ContractDetails created = contractClient.createContract(contract)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Contract creation failed"));
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @Operation(summary = "Get a contract by id")
@@ -101,18 +97,10 @@ public class ContractController {
     public ResponseEntity<ContractDetails> cancelContract(
             @PathVariable String id,
             @RequestBody Map<String, String> body) {
-        try {
             String reason = body.getOrDefault("reason", "Annulation demandée");
             ContractDetails cancelled = contractClient.cancelContract(id, reason)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Contract cancellation failed"));
             return ResponseEntity.ok(cancelled);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
 
-    // The completeContract method is internal to the service and not exposed via the client.
-    // If it needs to be exposed, it should be added to the ContractClient interface and use DTOs.
 }

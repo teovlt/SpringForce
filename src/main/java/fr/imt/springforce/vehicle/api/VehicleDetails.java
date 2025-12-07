@@ -1,6 +1,5 @@
 package fr.imt.springforce.vehicle.api;
 
-import fr.imt.springforce.vehicle.business.model.VehicleState;
 import lombok.Builder;
 import lombok.Data;
 

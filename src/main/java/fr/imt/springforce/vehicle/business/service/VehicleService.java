@@ -1,16 +1,15 @@
 package fr.imt.springforce.vehicle.business.service;
 
 import fr.imt.springforce.common.validation.ValidationChain;
-import fr.imt.springforce.contract.api.ContractClient;
-import fr.imt.springforce.contract.api.ContractDetails;
 import fr.imt.springforce.vehicle.api.VehicleClient;
 import fr.imt.springforce.vehicle.api.VehicleDetails;
 import fr.imt.springforce.vehicle.business.model.VehicleStateChange;
 import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
-import fr.imt.springforce.vehicle.business.model.VehicleState;
+import fr.imt.springforce.vehicle.api.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
+import fr.imt.springforce.vehicle.presentation.controller.kafka.ContractCancellationRequestProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ class VehicleService implements VehicleClient {
     private final VehicleRepository vehicleRepository;
     private final VehicleValidator vehicleValidator;
     private final VehicleMapper vehicleMapper;
-    private final ContractClient contractClient;
+    private final ContractCancellationRequestProducer contractCancellationRequestProducer;
 
     @Override
     public List<VehicleDetails> findAll() {
@@ -102,8 +101,7 @@ class VehicleService implements VehicleClient {
      * @param vehicleId vehicleId
      */
     private void invalidateRelatedContracts(String vehicleId) {
-        contractClient.getContractsByVehicle(vehicleId).stream().map(ContractDetails::getId)
-                .forEach(contractId -> contractClient.cancelContract(contractId, "Vehicle Out of Order"));
+        contractCancellationRequestProducer.send(vehicleId);
     }
 
 }

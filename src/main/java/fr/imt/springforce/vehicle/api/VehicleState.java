@@ -1,4 +1,4 @@
-package fr.imt.springforce.vehicle.business.model;
+package fr.imt.springforce.vehicle.api;
 
 public enum VehicleState {
     AVAILABLE,

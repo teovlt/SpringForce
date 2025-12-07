@@ -19,7 +19,6 @@ public class ContractScheduler {
 
     private final ContractRepository contractRepository;
 
-    // Exécuté toutes les heures
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void checkOverdueContracts() {
@@ -29,9 +28,9 @@ public class ContractScheduler {
                 .findOverdueContracts(LocalDateTime.now());
 
         for (Contract contract : overdueContracts) {
-/*
+
             contract.setStatus(ContractState.EN_RETARD);
-*/
+
             contractRepository.save(contract);
             log.warn("Contrat {} passé en retard", contract.getId());
 
@@ -42,7 +41,6 @@ public class ContractScheduler {
         log.info("{} contrats passés en retard", overdueContracts.size());
     }
 
-    // Exécuté toutes les 30 minutes
     @Scheduled(cron = "0 */30 * * * *")
     @Transactional
     public void startPendingContracts() {
@@ -52,13 +50,10 @@ public class ContractScheduler {
                 .findContractsToStart(LocalDateTime.now());
 
         for (Contract contract : contractsToStart) {
-/*
             contract.setStatus(ContractState.EN_COURS);
-*/
+
             contractRepository.save(contract);
             log.info("Contrat {} démarré", contract.getId());
-
-            // TODO: Mettre à jour le statut du véhicule
         }
 
         log.info("{} contrats démarrés", contractsToStart.size());
@@ -73,9 +68,9 @@ public class ContractScheduler {
 
         for (Contract nextContract : nextContracts) {
             if (nextContract.getStartDate().isBefore(LocalDateTime.now())) {
-/*
+
                 nextContract.setStatus(ContractState.ANNULE);
-*/
+
                 nextContract.setCancelledAt(LocalDateTime.now());
                 nextContract.setCancelReason(
                         "Contrat précédent en retard: " + lateContract.getId()

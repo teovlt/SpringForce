@@ -1,5 +1,6 @@
 package fr.imt.springforce.vehicle.business.model;
 
+import fr.imt.springforce.vehicle.api.VehicleState;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 

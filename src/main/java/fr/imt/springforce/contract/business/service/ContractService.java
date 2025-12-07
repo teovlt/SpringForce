@@ -2,17 +2,20 @@ package fr.imt.springforce.contract.business.service;
 
 import fr.imt.springforce.contract.api.ContractClient;
 import fr.imt.springforce.contract.api.ContractDetails;
+import fr.imt.springforce.contract.api.ContractNotFoundException;
 import fr.imt.springforce.contract.business.mapper.ContractMapper;
 import fr.imt.springforce.contract.business.model.Contract;
 import fr.imt.springforce.contract.business.model.ContractState;
 import fr.imt.springforce.contract.infrastructure.ContractRepository;
+import fr.imt.springforce.vehicle.api.VehicleClient;
+import fr.imt.springforce.vehicle.api.VehicleDetails;
+import fr.imt.springforce.vehicle.api.VehicleState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +23,17 @@ class ContractService implements ContractClient {
 
     private final ContractRepository contractRepository;
     private final ContractMapper contractMapper;
+    private final VehicleClient vehicleClient;
 
     @Override
     public Optional<ContractDetails> createContract(ContractDetails contractDetails) {
         Contract contract = contractMapper.toEntity(contractDetails);
         if (contract.getStartDate().isAfter(contract.getEndDate())) {
             throw new IllegalArgumentException("La date de début doit être avant la date de fin");
+        }
+
+        if (vehicleClient.findById(contractDetails.getVehicleId()).map(VehicleDetails::getState).orElse(VehicleState.AVAILABLE) == VehicleState.OUT_OF_ORDER) {
+            throw new IllegalStateException("Le vehicule actuel est en panne");
         }
 
         List<Contract> overlapping = contractRepository.findOverlappingContracts(
@@ -52,36 +60,28 @@ class ContractService implements ContractClient {
 
     @Override
     public List<ContractDetails> getAllContracts() {
-        return contractRepository.findAll().stream()
-                .map(contractMapper::toDto)
-                .collect(Collectors.toList());
+        return contractMapper.toDtoList(contractRepository.findAll());
     }
 
     @Override
     public List<ContractDetails> getContractsByClient(String clientId) {
-        return contractRepository.findByClientId(clientId).stream()
-                .map(contractMapper::toDto)
-                .collect(Collectors.toList());
+        return contractMapper.toDtoList(contractRepository.findByClientId(clientId));
     }
 
     @Override
     public List<ContractDetails> getContractsByVehicle(String vehicleId) {
-        return contractRepository.findByVehicleId(vehicleId).stream()
-                .map(contractMapper::toDto)
-                .collect(Collectors.toList());
+        return contractMapper.toDtoList(contractRepository.findByVehicleId(vehicleId));
     }
 
     @Override
     public List<ContractDetails> getContractsByStatus(ContractState status) {
-        return contractRepository.findByStatus(status).stream()
-                .map(contractMapper::toDto)
-                .collect(Collectors.toList());
+        return contractMapper.toDtoList(contractRepository.findByStatus(status));
     }
 
     @Override
     public Optional<ContractDetails> cancelContract(String contractId, String reason) {
         Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException("Contrat non trouvé: " + contractId));
+                .orElseThrow(() -> new ContractNotFoundException(contractId));
 
         contract.setCancelledAt(LocalDateTime.now());
         contract.setCancelReason(reason);
@@ -90,20 +90,4 @@ class ContractService implements ContractClient {
         return Optional.of(contractMapper.toDto(contractRepository.save(contract)));
     }
 
-    private Contract completeContract(String contractId, LocalDateTime returnDate) {
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException("Contrat non trouvé: " + contractId));
-        contract.setActualReturnDate(returnDate);
-        contract.markAsUpdated();
-        return contractRepository.save(contract);
-    }
-
-    private void cancelPendingContractsForVehicle(String vehicleId, String reason) {
-        List<Contract> pendingContracts = contractRepository
-                .findByVehicleIdAndStatusOrderByStartDateAsc(vehicleId, ContractState.EN_ATTENTE);
-
-        for (Contract contract : pendingContracts) {
-            cancelContract(contract.getId(), reason);
-        }
-    }
 }

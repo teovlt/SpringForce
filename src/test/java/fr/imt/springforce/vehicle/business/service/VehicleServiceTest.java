@@ -5,7 +5,7 @@ import fr.imt.springforce.common.validation.ValidationResult;
 import fr.imt.springforce.vehicle.api.VehicleDetails;
 import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
-import fr.imt.springforce.vehicle.business.model.VehicleState;
+import fr.imt.springforce.vehicle.api.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;

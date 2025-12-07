@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.springforce.vehicle.infrastructure.kafka;
+package fr.imt.springforce.vehicle.presentation.controller.kafka;
 
 import fr.imt.springforce.vehicle.api.VehicleClient;
 import fr.imt.springforce.vehicle.business.model.VehicleStateChange;

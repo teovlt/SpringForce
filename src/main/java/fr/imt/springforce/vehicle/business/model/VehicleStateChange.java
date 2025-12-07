@@ -6,6 +6,7 @@
  */
 package fr.imt.springforce.vehicle.business.model;
 
+import fr.imt.springforce.vehicle.api.VehicleState;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
