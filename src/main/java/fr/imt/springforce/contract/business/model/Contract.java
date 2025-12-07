@@ -43,20 +43,20 @@ public class Contract {
     private String cancelReason;
     private LocalDateTime actualReturnDate;
 
-
-    public boolean isActive() {
+    // Méthodes métier
+   /* public boolean isActive() {
         return status == ContractState.EN_COURS || status == ContractState.EN_ATTENTE;
-    }
+    }*/
 
     public boolean overlapsWith(LocalDateTime start, LocalDateTime end) {
         return this.startDate.isBefore(end) && this.endDate.isAfter(start);
     }
-
+/*
     public boolean isOverdue() {
         return LocalDateTime.now().isAfter(endDate)
                 && actualReturnDate == null
                 && status == ContractState.EN_COURS;
-    }
+    }*/
 
     public void markAsUpdated() {
         this.updatedAt = LocalDateTime.now();
