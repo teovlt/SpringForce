@@ -29,9 +29,9 @@ public class ContractScheduler {
                 .findOverdueContracts(LocalDateTime.now());
 
         for (Contract contract : overdueContracts) {
-/*
+
             contract.setStatus(ContractState.EN_RETARD);
-*/
+
             contractRepository.save(contract);
             log.warn("Contrat {} passé en retard", contract.getId());
 
@@ -52,9 +52,9 @@ public class ContractScheduler {
                 .findContractsToStart(LocalDateTime.now());
 
         for (Contract contract : contractsToStart) {
-/*
+
             contract.setStatus(ContractState.EN_COURS);
-*/
+
             contractRepository.save(contract);
             log.info("Contrat {} démarré", contract.getId());
 
@@ -73,9 +73,9 @@ public class ContractScheduler {
 
         for (Contract nextContract : nextContracts) {
             if (nextContract.getStartDate().isBefore(LocalDateTime.now())) {
-/*
+
                 nextContract.setStatus(ContractState.ANNULE);
-*/
+
                 nextContract.setCancelledAt(LocalDateTime.now());
                 nextContract.setCancelReason(
                         "Contrat précédent en retard: " + lateContract.getId()
