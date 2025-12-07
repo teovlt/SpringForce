@@ -36,9 +36,9 @@ public class ContractService {
 
         // TODO: Vérifier que le véhicule n'est pas en panne (appel au VehicleService)
 
-/*
+
         contract.setStatus(ContractState.EN_ATTENTE);
-*/
+
         contract.setCreatedAt(LocalDateTime.now());
         contract.setUpdatedAt(LocalDateTime.now());
 
@@ -69,14 +69,14 @@ public class ContractService {
     public Contract cancelContract(String contractId, String reason) {
         Contract contract = getContractById(contractId);
 
-       /* if (contract.getStatus() == ContractState.TERMINE ||
+        if (contract.getStatus() == ContractState.TERMINE ||
                 contract.getStatus() == ContractState.ANNULE) {
             throw new IllegalStateException("Ce contrat ne peut pas être annulé");
-        }*/
+        }
 
-/*
+
         contract.setStatus(ContractState.ANNULE);
-*/
+
         contract.setCancelledAt(LocalDateTime.now());
         contract.setCancelReason(reason);
         contract.markAsUpdated();
@@ -89,12 +89,12 @@ public class ContractService {
     public Contract completeContract(String contractId, LocalDateTime returnDate) {
         Contract contract = getContractById(contractId);
 
-        /*if (contract.getStatus() != ContractState.EN_COURS &&
+        if (contract.getStatus() != ContractState.EN_COURS &&
                 contract.getStatus() != ContractState.EN_RETARD) {
             throw new IllegalStateException("Ce contrat n'est pas en cours");
         }
 
-        contract.setStatus(ContractState.TERMINE);*/
+        contract.setStatus(ContractState.TERMINE);
         contract.setActualReturnDate(returnDate);
         contract.markAsUpdated();
 
