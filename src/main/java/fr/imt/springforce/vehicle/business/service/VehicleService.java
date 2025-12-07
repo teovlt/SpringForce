@@ -9,6 +9,7 @@ import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.business.model.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
+import fr.imt.springforce.vehicle.business.validators.VehicleStateValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ class VehicleService implements VehicleClient {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleValidator vehicleValidator;
+    private final VehicleStateValidator vehicleStateValidator;
     private final VehicleMapper vehicleMapper;
     private final ContractClient contractClient;
 
@@ -84,7 +86,12 @@ class VehicleService implements VehicleClient {
     }
 
     @Override
-    public void updateState(VehicleStateChange change) {
-        log.info("Vehicle state updated : %s to %s", change.getVehicleId(), change.getState().name());
+    public void setVehicleState(VehicleState vehicleState, String vehicleId){
+        ValidationChain.of(vehicleStateValidator).validate(vehicleState);
+        vehicleRepository.findById(vehicleId).ifPresent(vehicle -> {
+            vehicle.setState(vehicleState);
+            vehicleRepository.save(vehicle);
+        });
     }
 }
+    
