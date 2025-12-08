@@ -1,10 +1,9 @@
 package fr.imt.springforce.contract.business.model;
 
+import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -15,10 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@CompoundIndexes({
-        @CompoundIndex(name = "vehicle_dates_idx",
-                def = "{'vehicleId': 1, 'startDate': 1, 'endDate': 1}")
-})
+@Builder
 public class Contract {
 
     @Id
@@ -42,21 +38,6 @@ public class Contract {
     private LocalDateTime cancelledAt;
     private String cancelReason;
     private LocalDateTime actualReturnDate;
-
-    // Méthodes métier
-   /* public boolean isActive() {
-        return status == ContractState.EN_COURS || status == ContractState.EN_ATTENTE;
-    }*/
-
-    public boolean overlapsWith(LocalDateTime start, LocalDateTime end) {
-        return this.startDate.isBefore(end) && this.endDate.isAfter(start);
-    }
-/*
-    public boolean isOverdue() {
-        return LocalDateTime.now().isAfter(endDate)
-                && actualReturnDate == null
-                && status == ContractState.EN_COURS;
-    }*/
 
     public void markAsUpdated() {
         this.updatedAt = LocalDateTime.now();

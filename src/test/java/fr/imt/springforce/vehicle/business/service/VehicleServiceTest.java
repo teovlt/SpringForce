@@ -63,7 +63,7 @@ class VehicleServiceTest {
                 .color("Red")
                 .matriculation("ABC-123-DE")
                 .acquisitionDate(LocalDate.of(2022, 1, 1))
-                .state("AVAILABLE")
+                .state(VehicleState.AVAILABLE)
                 .build();
     }
 
