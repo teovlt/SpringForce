@@ -1,7 +1,6 @@
 package fr.imt.springforce.customer.application;
 
 import fr.imt.springforce.common.validation.ValidationChain;
-import fr.imt.springforce.contract.business.mapper.ContractMapper;
 import fr.imt.springforce.customer.api.CustomerClient;
 import fr.imt.springforce.customer.api.CustomerDetails;
 import fr.imt.springforce.customer.api.CustomerNotFoundException;

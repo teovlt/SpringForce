@@ -43,7 +43,6 @@ public class UniquenessValidator implements Validator<CustomerDetails> {
     private void validateLicenceNumberUniqueness(CustomerDetails customerDetails, ValidationResult result) {
         if (customerRepository.existsByLicenceNumber(customerDetails.getLicenceNumber())) {
             result.addError("A user with the licence number already exist.");
-
         }
     }
 

@@ -29,14 +29,12 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice<Object> {
                                   @NonNull ServerHttpRequest request,
                                   @NonNull ServerHttpResponse response) {
 
-        // 1. SAFETY CHECK: If the body is already an HttpResponse, return it immediately.
-        // This happens when GlobalExceptionHandler returns a ResponseEntity<HttpResponse>
-        // We do NOT want to wrap the error response inside a success response.
+        // If the body is already an HttpResponse, return it immediately.
         if (body instanceof HttpResponse) {
             return body;
         }
 
-        // 2. Handle void/null controller returns
+        // Handle void/null controller returns
         if (body == null) {
             return HttpResponse.success();
         }

@@ -15,7 +15,6 @@ public class HttpResponse<T> {
     private final T data;
     private final List<String> errors;
 
-    // Private constructor, use static factory methods
     private HttpResponse(String message, T data, List<String> errors) {
         this.timestamp = Instant.now();
         this.message = message;

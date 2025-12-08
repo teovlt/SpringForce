@@ -1,15 +1,15 @@
 package fr.imt.springforce.contract.business.service;
 
+import fr.imt.springforce.common.validation.ValidationChain;
 import fr.imt.springforce.contract.api.ContractClient;
 import fr.imt.springforce.contract.api.ContractDetails;
 import fr.imt.springforce.contract.api.ContractNotFoundException;
 import fr.imt.springforce.contract.business.mapper.ContractMapper;
 import fr.imt.springforce.contract.business.model.Contract;
 import fr.imt.springforce.contract.business.model.ContractState;
+import fr.imt.springforce.contract.business.validator.ContractValidator;
 import fr.imt.springforce.contract.infrastructure.ContractRepository;
 import fr.imt.springforce.vehicle.api.VehicleClient;
-import fr.imt.springforce.vehicle.api.VehicleDetails;
-import fr.imt.springforce.vehicle.api.VehicleState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,26 +27,10 @@ class ContractService implements ContractClient {
 
     @Override
     public Optional<ContractDetails> createContract(ContractDetails contractDetails) {
+        validateContract(contractDetails);
+
         Contract contract = contractMapper.toEntity(contractDetails);
-        if (contract.getStartDate().isAfter(contract.getEndDate())) {
-            throw new IllegalArgumentException("La date de début doit être avant la date de fin");
-        }
 
-        if (vehicleClient.findById(contractDetails.getVehicleId()).map(VehicleDetails::getState).orElse(VehicleState.AVAILABLE) == VehicleState.OUT_OF_ORDER) {
-            throw new IllegalStateException("Le vehicule actuel est en panne");
-        }
-
-        List<Contract> overlapping = contractRepository.findOverlappingContracts(
-                contract.getVehicleId(),
-                contract.getStartDate(),
-                contract.getEndDate()
-        );
-
-        if (!overlapping.isEmpty()) {
-            throw new IllegalStateException(
-                    "Le véhicule est déjà réservé sur cette période"
-            );
-        }
         contract.setCreatedAt(LocalDateTime.now());
         contract.setUpdatedAt(LocalDateTime.now());
 
@@ -88,6 +72,10 @@ class ContractService implements ContractClient {
         contract.markAsUpdated();
 
         return Optional.of(contractMapper.toDto(contractRepository.save(contract)));
+    }
+
+    private void validateContract(ContractDetails contractDetails) {
+        ValidationChain.of(new ContractValidator(vehicleClient, contractRepository)).validate(contractDetails);
     }
 
 }

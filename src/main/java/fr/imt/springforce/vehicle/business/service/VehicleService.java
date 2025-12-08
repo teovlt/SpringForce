@@ -3,13 +3,13 @@ package fr.imt.springforce.vehicle.business.service;
 import fr.imt.springforce.common.validation.ValidationChain;
 import fr.imt.springforce.vehicle.api.VehicleClient;
 import fr.imt.springforce.vehicle.api.VehicleDetails;
-import fr.imt.springforce.vehicle.business.model.VehicleStateChange;
+import fr.imt.springforce.vehicle.presentation.kafka.ContractCancellationRequest;
 import fr.imt.springforce.vehicle.business.mapper.VehicleMapper;
 import fr.imt.springforce.vehicle.business.model.Vehicle;
 import fr.imt.springforce.vehicle.api.VehicleState;
 import fr.imt.springforce.vehicle.business.validators.VehicleValidator;
 import fr.imt.springforce.vehicle.infrastructure.repository.VehicleRepository;
-import fr.imt.springforce.vehicle.presentation.controller.kafka.ContractCancellationRequestProducer;
+import fr.imt.springforce.vehicle.presentation.kafka.ContractCancellationRequestProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,6 @@ import java.util.Optional;
 class VehicleService implements VehicleClient {
 
     private final VehicleRepository vehicleRepository;
-    private final VehicleValidator vehicleValidator;
     private final VehicleMapper vehicleMapper;
     private final ContractCancellationRequestProducer contractCancellationRequestProducer;
 
@@ -41,7 +40,8 @@ class VehicleService implements VehicleClient {
 
     @Override
     public Optional<VehicleDetails> create(VehicleDetails vehicleDetails) {
-        ValidationChain.of(vehicleValidator).validate(vehicleDetails.getMatriculation());
+        ValidationChain.of(new VehicleValidator(vehicleRepository)).validate(vehicleDetails.getMatriculation());
+
         Vehicle vehicle = vehicleMapper.toEntity(vehicleDetails);
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
         log.info("Saved vehicle with id {}", savedVehicle.getId());
@@ -50,13 +50,13 @@ class VehicleService implements VehicleClient {
 
     @Override
     public Optional<VehicleDetails> update(VehicleDetails vehicleDetails, String vehicleId) {
-        if (vehicleDetails.getState() == VehicleState.OUT_OF_ORDER) {
-            invalidateRelatedContracts(vehicleId);
+        if (VehicleState.OUT_OF_ORDER == vehicleDetails.getState()) {
+            invalidateRelatedContracts(vehicleId, VehicleState.OUT_OF_ORDER.name());
         }
 
         return vehicleRepository.findById(vehicleId).map(existingVehicle -> {
             if (!Objects.equals(existingVehicle.getMatriculation(), vehicleDetails.getMatriculation())) {
-                ValidationChain.of(vehicleValidator).validate(vehicleDetails.getMatriculation());
+                ValidationChain.of(new VehicleValidator(vehicleRepository)).validate(vehicleDetails.getMatriculation());
                 existingVehicle.setMatriculation(vehicleDetails.getMatriculation());
             }
 
@@ -78,30 +78,14 @@ class VehicleService implements VehicleClient {
     }
 
     /**
-     * Given a vehicle status modification, will update the
-     * @param change vehicle status change notification
-     */
-    @Override
-    public void updateState(VehicleStateChange change) {
-        log.info("Vehicle state updated : {} to {}", change.getVehicleId(), change.getState().name());
-        // Modify state
-        vehicleRepository.findById(change.getVehicleId()).map(vehicle -> {
-            vehicle.setState(change.getState());
-            return vehicleRepository.save(vehicle);
-        });
-
-        // Invalidate out of order contract
-        if (change.getState() == VehicleState.OUT_OF_ORDER) {
-            invalidateRelatedContracts(change.getVehicleId());
-        }
-    }
-
-    /**
      * Invalidates contracts related to a vehicleId
      * @param vehicleId vehicleId
      */
-    private void invalidateRelatedContracts(String vehicleId) {
-        contractCancellationRequestProducer.send(vehicleId);
+    private void invalidateRelatedContracts(String vehicleId, String reason) {
+        contractCancellationRequestProducer
+                .send(ContractCancellationRequest.builder().vehicleId(vehicleId)
+                        .reason(reason)
+                        .build());
     }
 
 }

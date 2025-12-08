@@ -63,7 +63,7 @@ class VehicleServiceTest {
                 .color("Red")
                 .matriculation("ABC-123-DE")
                 .acquisitionDate(LocalDate.of(2022, 1, 1))
-                .state(VehicleState.AVAILABLE)
+                .state("AVAILABLE")
                 .build();
     }
 
@@ -86,8 +86,7 @@ class VehicleServiceTest {
 
         Optional<VehicleDetails> result = vehicleService.findById(testVehicle.getId());
 
-        assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(testVehicleDetails);
+        assertThat(result).isPresent().contains(testVehicleDetails);
     }
 
     @Test
@@ -107,8 +106,7 @@ class VehicleServiceTest {
 
         Optional<VehicleDetails> result = vehicleService.create(testVehicleDetails);
 
-        assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(testVehicleDetails);
+        assertThat(result).isPresent().contains(testVehicleDetails);
         verify(vehicleValidator).validate(eq(testVehicleDetails.getMatriculation()), any(ValidationResult.class));
         verify(vehicleRepository).save(testVehicle);
     }

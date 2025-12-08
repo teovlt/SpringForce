@@ -17,6 +17,6 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         auto.offset.reset: earliest
-        spring.json.value.default.type: fr.imt.springforce.vehicle.business.model.VehicleStateChange
+        spring.json.value.default.type: fr.imt.springforce.vehicle.presentation.kafka.ContractCancellationRequest
         spring.json.trusted.packages: "fr.imt.springforce.vehicle.*"
 

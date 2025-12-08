@@ -40,7 +40,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<HttpResponse<Void>> handleValidationException(ValidationException ex) {
-        log.error("Validation error: {}", ex.getErrors());
         HttpResponse<Void> errorResponse = HttpResponse.error(
                 "Validation Failed",
                 ex.getErrors()
@@ -53,7 +52,6 @@ public class GlobalExceptionHandler {
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
-        log.error("Validation error: {}", errorMessage);
         HttpResponse<Void> errorResponse = HttpResponse.error(
                 "Validation Failed",
                 errorMessage
@@ -80,7 +78,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<HttpResponse<Void>> handleMalformedRequest(HttpMessageNotReadableException ex) {
         log.error("Malformed request: ", ex);
 
-        HttpResponse<Void> errorResponse = HttpResponse.error("Bad Request");
+        HttpResponse<Void> errorResponse = HttpResponse.error("Bad Request: message not readeable");
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

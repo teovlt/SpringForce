@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,11 +48,10 @@ public class VehicleController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "500", description = "Vehicle creation failed")
     })
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VehicleDetails createVehicle(@RequestBody VehicleDetails vehicle) {
-        return vehicleClient.create(vehicle)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Vehicle creation failed"));
+    public Optional<VehicleDetails> createVehicle(@RequestBody VehicleDetails vehicle) {
+        return vehicleClient.create(vehicle);
     }
 
     @Operation(summary = "Update a vehicle")

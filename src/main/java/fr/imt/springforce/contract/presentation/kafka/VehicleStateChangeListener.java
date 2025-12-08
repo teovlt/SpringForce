@@ -4,10 +4,10 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.springforce.vehicle.presentation.controller.kafka;
+package fr.imt.springforce.contract.presentation.kafka;
 
-import fr.imt.springforce.vehicle.api.VehicleClient;
-import fr.imt.springforce.vehicle.business.model.VehicleStateChange;
+import fr.imt.springforce.contract.api.ContractClient;
+import fr.imt.springforce.vehicle.presentation.kafka.ContractCancellationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,11 +17,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class VehicleStateChangeListener {
 
-    private final VehicleClient vehicleClient;
+    private final ContractClient contractClient;
 
-    @KafkaListener(topics = "springforce_vehicle_update_state_private", groupId = "car-lease-system")
-    public void updateVehicleState(@Payload VehicleStateChange vehicleStateChange) {
-        vehicleClient.updateState(vehicleStateChange);
+    @KafkaListener(topics = "springforce_contract_cancellation_request_private", groupId = "car-lease-system")
+    public void updateVehicleState(@Payload ContractCancellationRequest request) {
+        contractClient.cancelContract(request.getVehicleId(), request.getReason());
     }
 
 }

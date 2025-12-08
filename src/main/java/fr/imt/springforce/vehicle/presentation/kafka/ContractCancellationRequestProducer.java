@@ -4,7 +4,7 @@
  *  (C) Copyright Boulanger S.A., 2025
  * -----------------------------------------------------------------
  */
-package fr.imt.springforce.vehicle.presentation.controller.kafka;
+package fr.imt.springforce.vehicle.presentation.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ContractCancellationRequestProducer {
 
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, ContractCancellationRequest> kafkaTemplate;
 
-    public void send(String vehicleId) {
-        kafkaTemplate.send("springforce_contract_cancellation_request_private", vehicleId);
+    public void send(ContractCancellationRequest request) {
+        kafkaTemplate.send("springforce_contract_cancellation_request_private", request.getVehicleId(), request);
     }
 }
